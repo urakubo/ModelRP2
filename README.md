@@ -18,3 +18,17 @@ Matlab plus the toolbox SimBiology. We confirmed the safe executions of sample p
 
 2. Execute plot_1C.m, etc., you will see the correpondent figures.
 
+## License
+
+This project is licensed under the MIT license - see the [LICENSE](LICENSE) file for details.
+
+## Reference
+Molecular concentrations required for dopamine dip-detection in D2 striatal spiny-projection neurons
+
+Hidetoshi Urakubo, Sho Yagishita, Haruo Kasai, Yoshiyuki Kubota, and Shin Ishii
+
+In preparation.
+
+2020/8/5
+
+Correspondence: hurakubo@gmail.com
