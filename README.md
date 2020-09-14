@@ -1,4 +1,4 @@
-# Molecular concentrations required for dopamine dip-detection in D2 striatal spiny-projection neurons
+# A healthy balance between dopamine D2 receptors and RGS enables regret-signal detection in the striatum
 
 ![System requirements](https://img.shields.io/badge/platform-matlab2017b%20or%20newer-green.svg)
 [![License: GPL v3](https://img.shields.io/badge/license-MIT-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
