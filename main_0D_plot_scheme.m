@@ -3,12 +3,13 @@
 %%%% Init
 %%%%
 
+
 	clear;
 	addpath('./model');
 	addpath('./funcs');
 	addpath('./funcs2');
-	font_init;
 
+	init_font;
 
 	check = 0;
 	[model, species, params, Toffset] = msn_setup(check);
@@ -17,7 +18,7 @@
 
 %%%
 	fig     = figure;
-	trange  = [-1,2];
+	trange  = [-1.5,1.5];
 	yrange1 = [-0.2, 0.6];
 	a1 = plot_prep(fig, trange, yrange1, 'Time (s)', '(uM)', 1);
 
@@ -29,8 +30,8 @@
 	yticks([0 0.5])
 
 
-	yrange2 = [0,110];
-	a2 = plot_prep(fig, trange, yrange2, 'Time (s)', '(%total)', 5);
+	yrange = [0,110];
+	a2 = plot_prep(fig, trange, yrange, 'Time (s)', '(%total)', 5);
 
 	tname = 'Gi_unbound_AC';
 	[T, DATA] = obtain_profile(tname, sd, Toffset);
@@ -38,16 +39,12 @@
 
 	data_stable = interp1(T, DATA, Toffset);
 	data_half   = interp1(T, DATA, t_half); % vq = interp1(x,v,xq)
-	plot(a2, [0 0], yrange2, 'r:');
-	plot(a2, [1 1]*t_half, yrange2, 'r:');
-	plot(a2, t_half, data_half*100./DATA(end), 'ro', 'MarkerFaceColor','r','MarkerSize',4);
-	plot(a2, trange, [1 1]*data_stable*100, 'r:', 'MarkerFaceColor','r','MarkerSize',4);
-
+	plot(a2, [0 0], yrange, 'k:');
+	plot(a2, [1 1]*t_half, yrange, 'k:');
+	plot(a2, trange, [1 1]*100, 'k:');
 	plot(a2, T, DATA*100./DATA(end), 'k-', 'LineWidth',2);
+	plot(a2, t_half, data_half*100./DATA(end), 'ro', 'MarkerFaceColor','r','MarkerSize',4);
 
-%%
-%%
-%%
 
 
 function ax = plot_prep(fig, xx, zz , xtitle, ztitle, i)

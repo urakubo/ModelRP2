@@ -1,4 +1,4 @@
-function font_init;
+function init_font;
 	fontName = 'Arial';
 	set(groot,'defaultAxesXColor','k'); % factory is [0.15,0.15,0.15]
 	set(groot,'defaultAxesYColor','k');

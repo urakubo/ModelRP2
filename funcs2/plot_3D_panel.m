@@ -1,18 +1,18 @@
 %%
 %%
 %%
-function [fig, ax] = plot_area_3D_3(T, A, targs, concs, default_conc, TITLE, standards)
+function [fig, ax] = plot_3D_panel(T, A, targs, concs, standards)
 
 	T = permute(T ,[2 1 3]);
 	A = permute(A ,[2 1 3]);
 
-	xlog_concs = log10(concs{1});
-	ylog_concs = log10(concs{2});
-	zlog_concs = log10(concs{3});
+	xconcs = concs{1};
+	yconcs = concs{2};
+	zconcs = concs{3};
 
-	xminmax = [ min(xlog_concs) , max(xlog_concs) ];
-	yminmax = [ min(ylog_concs) , max(ylog_concs) ];
-	zminmax = [ min(zlog_concs) , max(zlog_concs) ];
+	xminmax = [ min(xconcs) , max(xconcs) ];
+	yminmax = [ min(yconcs) , max(yconcs) ];
+	zminmax = [ min(zconcs) , max(zconcs) ];
 
 	t_not_inh =  T.*(1-A);
 	inh_not_t =  A.*(1-T);
@@ -20,14 +20,14 @@ function [fig, ax] = plot_area_3D_3(T, A, targs, concs, default_conc, TITLE, sta
 
 	f ={};
 	v ={};
-	[f{1},v{1}]    = isosurface(xlog_concs,ylog_concs,zlog_concs, t_not_inh, 0.5);
-	[f{2},v{2},ic] = isocaps(xlog_concs,ylog_concs,zlog_concs, t_not_inh, 0.5);
+	[f{1},v{1}]    = isosurface(xconcs, yconcs, zconcs, t_not_inh, 0.5);
+	[f{2},v{2},ic] = isocaps(xconcs, yconcs, zconcs, t_not_inh, 0.5);
 
-	[f{3},v{3}]    = isosurface(xlog_concs,ylog_concs,zlog_concs, inh_not_t, 0.5);
-	[f{4},v{4},ic] = isocaps(xlog_concs,ylog_concs,zlog_concs, inh_not_t, 0.5);
+	[f{3},v{3}]    = isosurface(xconcs, yconcs, zconcs, inh_not_t, 0.5);
+	[f{4},v{4},ic] = isocaps(xconcs, yconcs, zconcs, inh_not_t, 0.5);
 
-	[f{5},v{5}]    = isosurface(xlog_concs,ylog_concs,zlog_concs, both, 0.5);
-	[f{6},v{6},ic] = isocaps(xlog_concs,ylog_concs,zlog_concs, both, 0.5);
+	[f{5},v{5}]    = isosurface(xconcs, yconcs, zconcs, both, 0.5);
+	[f{6},v{6},ic] = isocaps(xconcs, yconcs, zconcs, both, 0.5);
 
 	col = {'red','red','blue','blue','magenta','magenta'};
 
@@ -37,12 +37,27 @@ function [fig, ax] = plot_area_3D_3(T, A, targs, concs, default_conc, TITLE, sta
 	fig.Renderer='Painters';
 	ax = gca;
 	ax.BoxStyle = 'full';
+	
+	
+	set(gca, 'XScale', 'log');
+	set(gca, 'YScale', 'log');
+	set(gca, 'ZScale', 'log');
+
+	set(gca, 'XTick', 10.^(-3:3));
+	set(gca, 'YTick', 10.^(-3:3));
+	set(gca, 'ZTick', 10.^(-3:3));
+
+	set(gca, 'XTickLabel',  num2str( get(gca,'XTick')' ,'%g'));
+	set(gca, 'YTickLabel',  num2str( get(gca,'YTick')' ,'%g'));
+	set(gca, 'ZTickLabel',  num2str( get(gca,'ZTick')' ,'%g'));
+	
 	box on;
 	xlim(xminmax);
 	ylim(yminmax);
 	zlim(zminmax);
 	axis square;
 	alpha = 0.1;
+	
 	hold on;
 %%%
 	for i = 1:numel(f);
@@ -53,15 +68,14 @@ function [fig, ax] = plot_area_3D_3(T, A, targs, concs, default_conc, TITLE, sta
 		% if ismember(i,[2,4,6]); reducepatch(p, 0.2); end;
 	end
 %%%
-	title(TITLE,'Interpreter','none')
-	xlabel( sprintf('%s (10^X uM)', targs{1})  );
-	ylabel( sprintf('%s (10^X uM)', targs{2})  );
-	zlabel( sprintf('%s (10^X uM)', targs{3})  );
+	xlabel( {'Relative conc. of'; targs{1} }  );
+	ylabel( {'Relative conc. of'; targs{2} }  );
+	zlabel( sprintf('Relative conc. of %s', targs{3})  );
 %%%
 
-	xlog_default_conc = log10( default_conc{1} );
-	ylog_default_conc = log10( default_conc{2} );
-	zlog_default_conc = log10( default_conc{3} );
+	xlog_default_conc = 1;
+	ylog_default_conc = 1;
+	zlog_default_conc = 1;
 
 	if ismember(1,standards)
 		z = [zminmax(1), zminmax(1)];

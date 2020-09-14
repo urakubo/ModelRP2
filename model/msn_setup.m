@@ -21,6 +21,7 @@ function [model, species, params, Toffset] = msn_setup(check)
 	%% Simulation config
 	%%
 	configsetObj = getconfigset(model);
+	% configsetObj.SolverType = 'ode45';
 	set(configsetObj.SolverOptions, 'AbsoluteTolerance', 1.000000e-08);
 	set(configsetObj.SolverOptions, 'RelativeTolerance', 1.000000e-05);
 
