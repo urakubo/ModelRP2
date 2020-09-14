@@ -18,14 +18,14 @@ Matlab plus the toolbox SimBiology. We confirmed the safe executions of sample p
 
 2. Execute main_1D_plot.m, etc., you will see the following figures.
 
-| Figures | program |
+| Program | Figure |
 | ------------- | ------------- |
-|Fig 1C, S1 Fig| main_0D_plot.m |
-|Fig 2A| main_1D_plot_scheme.m |
-|Fig 2B| main_1D_plot.m |
-|Fig 2C, S2 Fig| main_2D_plot.m |
-|Fig 3| main_2D_plot_theory.m |
-|S3 Fig| main_3D_plot.m |
+| main_0D_plot.m | Fig 1C, S1 Fig |
+| main_1D_plot_scheme.m | Fig 2A |
+| main_1D_plot.m | Fig 2B |
+| main_2D_plot.m | Fig 2C, S2 Fig |
+| main_2D_plot_theory.m | Fig 3 |
+| main_3D_plot.m |S3 Fig |
 
 ## License
 
