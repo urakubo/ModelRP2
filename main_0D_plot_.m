@@ -1,7 +1,5 @@
 
-%%%%
-%%%% Init
-%%%%
+%%% Init
 
 	clear;
 	addpath('./model');
@@ -10,7 +8,8 @@
 
 	init_font;
 
-	%%% Fig1C
+%%% Fig1C
+
 	targs_plot  = {'DA','Gi_unbound_AC'};
 	yranges  = {[-0.12, 1]*0.8,  [-0.04,0.25]};
 
@@ -19,7 +18,8 @@
 	linew = { 0.5, 0.5, 2 };
 	mult  = 1./5;
 
-	%%%% S1 Fig 
+%%% S1 Fig 
+
 	targs_plot  = {'DA','DA_D2R','Gi_unbound_AC','Gi_Gbc', ...
 		'Gi_GTP','Gi_GDP','AC1_Gi_GDP','AC1_Gi_GTP'};
 	pm = [-0.12, 1];
@@ -30,9 +30,7 @@
 	linew = {2};
 	mult  = 1;
 
-	%%%
-
-	[model, species, params, Toffset] = msn_setup(0);
+%%%
 
 	check = 0;
 	durDA = 1;
@@ -44,9 +42,8 @@
 	trange  = [-1,3];
 	ylegend  = '(uM)';
 
-%%
-%% Prep. figures
-%%
+%%% Prep. figures
+
 	a = {};
 	fig     = figure;
 	for i = 1:numel(targs_plot);
@@ -57,8 +54,9 @@
 		'r-','LineWidth',1);
 	end
 	yticks(a{1},[0 0.5]);
-%%
-%%
+
+%%% Plot
+
 	for j = 1:numel(targs);
 		targ = targs{j};
 		reservs = change_conc(targ, species, mult);
@@ -69,7 +67,7 @@
 			plot(a{i}, T, DATA, '-', 'LineWidth', linew{j}, 'Color', colors{j});
 		end
 	end
-%%%
+
 %%%
 
 
