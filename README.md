@@ -8,7 +8,7 @@ In the brain, phasic dopamine (DA) signals convey reward-related information in 
 
 ## System requirements
 
-Matlab plus the toolbox SimBiology. We confirmed the safe executions of sample programs on Matlab 2017b and 2018a on Microsoft Windows10.
+Matlab plus the toolbox SimBiology. We confirmed the safe executions of sample programs on Matlab 2020a on Microsoft Windows10.
 
 ## Installation
 
@@ -16,7 +16,16 @@ Matlab plus the toolbox SimBiology. We confirmed the safe executions of sample p
 
 	- git clone https://github.com/urakubo/ModelRP2.git
 
-2. Execute plot_1C.m, etc., you will see the correpondent figures.
+2. Execute main_1D_plot.m, etc., you will see the following figures.
+
+| Figures | program |
+| ------------- | ------------- |
+|Fig 1C, S1 Fig| main_0D_plot.m |
+|Fig 2A| main_1D_plot_scheme.m |
+|Fig 2B| main_1D_plot.m |
+|Fig 2C, S2 Fig| main_2D_plot.m |
+|Fig 3| main_2D_plot_theory.m |
+|S3 Fig| main_3D_plot.m |
 
 ## License
 
