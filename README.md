@@ -16,7 +16,7 @@ Matlab plus the toolbox SimBiology. We confirmed safe executions of sample progr
 
 	- git clone https://github.com/urakubo/ModelRP2.git
 
-2. Execute main_1D_plot.m, etc., you will see the following figures.
+2. Execute main_1D_plot.m, etc., and you will see the following figures.
 
 | Program | Figure |
 | ------------- | ------------- |
@@ -32,12 +32,12 @@ Matlab plus the toolbox SimBiology. We confirmed safe executions of sample progr
 This project is licensed under the MIT license - see the [LICENSE](LICENSE) file for details.
 
 ## Reference
-Molecular concentrations required for dopamine dip-detection in D2 striatal spiny-projection neurons
+A healthy balance between dopamine D2 receptors and RGS enables regret-signal detection in the striatum
 
 Hidetoshi Urakubo, Sho Yagishita, Haruo Kasai, Yoshiyuki Kubota, and Shin Ishii
 
 In preparation.
 
-2020/8/5
+2020/9/15
 
 Correspondence: hurakubo@gmail.com
