@@ -16,8 +16,8 @@
 	targs = {{'D2R','RGS'}, {'D2R','RGS'},{}};
 	colors  = { [1 1 1]*0.7, [1 1 1]*0.4, [1 1 1]*0 };
 	linew = { 1.5, 1.5, 2 };
-%	mults = {[4, 1], [1/4, 1],[]};
-	mults = {[1, 1/3], [1, 3.0],[]};
+	mults = {[4, 1], [1/4, 1],[]};
+%	mults = {[1, 1/3], [1, 3.0],[]};
 
 % S1 Fig
 
@@ -68,15 +68,9 @@
 %
 
 function sd = run_sbiosimulate(model, species, targ, mult)
-	reservs = {};
-	for i = 1: numel(targ)
-		reservs{i} = species{targ{i},'Obj'}.InitialAmount;
-		species{targ{i},'Obj'}.InitialAmount = reservs{i} * mult(i);
-	end
+	reservs = change_conc(targ, species, mult)
 	sd = sbiosimulate(model);
-	for i = 1: numel(targ)
-		species{targ{i},'Obj'}.InitialAmount = reservs{i};
-	end
+	restore_conc(targ, species, reservs)
 end
 
 
@@ -84,7 +78,7 @@ function reservs = change_conc(targ, species, mult)
 	reservs = {};
 	for i = 1: numel(targ)
 		reservs{i} = species{targ{i},'Obj'}.InitialAmount;
-		species{targ{i},'Obj'}.InitialAmount = reservs{i} * mult;
+		species{targ{i},'Obj'}.InitialAmount = reservs{i} * mult(i);
 	end
 end
 

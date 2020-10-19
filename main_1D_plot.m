@@ -18,11 +18,11 @@
 	mult_concs = 10.^[-1:0.1:1];
 	width = 1;
 
-%%{
+%{
 	targs = {'Gi_Gbc'};
 	mult_concs = 10.^[-2:0.1:2];
 	width = 1.15;
-%%}
+%}
 
 	fig = figure;
 	for i = 1:numel(targs);

@@ -10,6 +10,7 @@
 	init_font;
 
 	[model, species, params, Toffset] = msn_setup(0);
+	AC1_tot = species{'AC1','Obj'}.InitialAmount;
 
 	targs_change = {{} ,{'D2R','RGS'}, {'D2R','RGS'}, {'D2R','RGS'}};
 	targs_change_title = {'Healthy adult', 'Healthy infant', 'Schizophrenia', 'Dystonia'};
