@@ -28,7 +28,6 @@ function [fig, ax1] = panel_prep4(xx, yy, zz, xtitle, ytitle)
 	set(gca, 'YTickLabel',  num2str( get(gca,'YTick')' ,'%g'));
 
 
-	colormap(jet(30));
 end
 
 

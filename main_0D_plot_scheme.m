@@ -13,6 +13,7 @@
 
 	check = 0;
 	[model, species, params, Toffset] = msn_setup(check);
+
 	sd   = sbiosimulate(model);
 
 
@@ -36,14 +37,16 @@
 	tname = 'Gi_unbound_AC';
 	[T, DATA] = obtain_profile(tname, sd, Toffset);
 	t_half    = obtain_half(tname, sd, Toffset);
+	AC1tot = obtain_conc('AC1', sd, 0);
+	DATA = DATA./AC1tot;
 
 	data_stable = interp1(T, DATA, Toffset);
 	data_half   = interp1(T, DATA, t_half); % vq = interp1(x,v,xq)
 	plot(a2, [0 0], yrange, 'k:');
 	plot(a2, [1 1]*t_half, yrange, 'k:');
 	plot(a2, trange, [1 1]*100, 'k:');
-	plot(a2, T, DATA*100./DATA(end), 'k-', 'LineWidth',2);
-	plot(a2, t_half, data_half*100./DATA(end), 'ro', 'MarkerFaceColor','r','MarkerSize',4);
+	plot(a2, T, DATA*100, 'k-', 'LineWidth',2);
+	plot(a2, t_half, data_half*100, 'ro', 'MarkerFaceColor','r','MarkerSize',4);
 
 
 

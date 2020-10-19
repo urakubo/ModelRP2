@@ -11,73 +11,83 @@
 
 	init_font;
 
+	T1_2  = 0.5;
+	Io    = 0.7;
+	Idip  = 0.3;
 	grey = [1,1,1]*0.5;
-	T1_2 = 0.5;
-	Io   = 0.75;
 
 	check = 0;
 	[model, species, params, Toffset] = msn_setup(check);
 
 %%%
 %%%
-	dims = {'D2R','AC1','RGS'};
-	xtarg = 'RGS';
-	ytarg = 'D2R';
-	targ = {xtarg, ytarg};
-	
 
-%	tmp = 10.^[-1:0.025:1];
-	tmp = 10.^[-1:0.05:2];
-%	tmp = 10.^[-1:0.1:2];
+	tmp = 10.^[-1:0.1:2];
+	tmp = 10.^[-1:0.05:1];
+	tmp = 10.^[-1:0.025:2];
 
-	for i = 1:3;
-		mult_concs{i} = tmp;
-		default_concs{i} = species{dims{i},'Obj'}.InitialAmount;
-		fprintf('Original conc %s: %g uM \n', dims{i}, default_concs{i} );
+	targs = {'D2R','AC1','RGS'};
+	dim   = [3,1];
+	targ = targs(dim);
+
+	conc = {};
+	mconc = {};
+	for i = 1:numel(dim);
+		mult_conc{i} = tmp;
+		default_conc = species{targ{i},'Obj'}.InitialAmount;
+		conc{i}		 = mult_conc{i} .* default_conc;
+		fprintf('Standard conc %s: %g uM \n', targ{i}, default_conc );
 	end
-	default_concs = cell2table( default_concs, 'VariableNames', dims);
-	mult_concs    = cell2table( mult_concs, 'VariableNames', dims);
 
+	% Theory
+	D2R_AC1_RGS = obtain_init_concs_2D(species, targ, conc, targs);
+	D2R = D2R_AC1_RGS{1};
+	AC1 = D2R_AC1_RGS{2};
+	RGS = D2R_AC1_RGS{3};
+	[ io_theory, idip_theory, t_half_theory ] = theory(D2R, AC1, RGS, params);
 
-	num  = [numel(mult_concs{1,targ{1}}), numel(mult_concs{1,targ{2}})];
-	mAC  = ones(num) .* default_concs{1,'AC1'};
-	mRGS = mult_concs{1,xtarg}' * ones(1,num(2)) .* default_concs{1,xtarg};
-	mD2R = ones(num(1), 1) * mult_concs{1, ytarg}.* default_concs{1,ytarg};
-
-	[ i_theory, t_half_theory ] = theory(mD2R, mAC, mRGS, params);
 
 %%
 %% 2D plot 
 %%
-	xmconcs = mult_concs{1, xtarg } ;
-	ymconcs = mult_concs{1, ytarg } ;
+	xmconc = mult_conc{1} ;
+	ymconc = mult_conc{2} ;
+	
+	[fig0, ax0] = fig_prep2(targ, xmconc, ymconc, 'i dip');
+	[fig1, ax1] = fig_prep2(targ, xmconc, ymconc, 'i o');
+	[fig2, ax2] = fig_prep2(targ, xmconc, ymconc, 't half');
 
-	[fig1, ax1] = fig_prep2(targ, xmconcs, ymconcs, 'i Theory');
-	[fig2, ax2] = fig_prep2(targ, xmconcs, ymconcs, 't1/2 Theory');
+	area = (io_theory > Io) .* (idip_theory < Idip);
+	plot_heatmap(fig2, ax2, xmconc, ymconc, area');
 
-	plot_heatmap(fig2, ax2, xmconcs, ymconcs, i_theory');
+	contour(ax0, xmconc, ymconc, idip_theory', [Idip Idip], ':', 'LineWidth', 4, 'Color', [0 0.5 1]);
+	contour(ax1, xmconc, ymconc, io_theory', [Io Io], 'b:', 'LineWidth', 4);
+	contour(ax2, xmconc, ymconc, t_half_theory', [T1_2 T1_2], 'r:', 'LineWidth', 4);
 
-	contour(ax1, xmconcs, ymconcs, i_theory', [Io Io], 'b:', 'LineWidth', 4);
-	contour(ax2, xmconcs, ymconcs, t_half_theory', [T1_2 T1_2], 'r:', 'LineWidth', 4);
-
-	plot_standard_conc(ax1, xmconcs, ymconcs);
-	plot_standard_conc(ax2, xmconcs, ymconcs);
+	plot_standard_conc(ax0, xmconc, ymconc);
+	plot_standard_conc(ax1, xmconc, ymconc);
+	plot_standard_conc(ax2, xmconc, ymconc);
 
 
 %%
 %% Asymptote
 %%
-	RGS    = mRGS(:,1);
-	AC     = default_concs{1,'AC1'};
-	stdD2R = default_concs{1,'D2R'};
-	
-	D2R   = theory_asymptote(RGS, Io, params, AC, 'I1');
-	D2R_2 = theory_asymptote(RGS, Io, params, AC, 'I2');
-	plot(ax1, xmconcs, D2R./stdD2R   ,'--','LineWidth',2, 'Color', grey);
-	plot(ax1, xmconcs, D2R_2./stdD2R ,'--','LineWidth',2, 'Color', grey);
+	RGS    = conc{1};
+	AC     = species{'AC1','Obj'}.InitialAmount;
+	stdD2R = species{'D2R','Obj'}.InitialAmount;
+
+	D2R   = theory_asymptote(RGS, Idip, params, AC, 'Idip_1');
+	D2R_2 = theory_asymptote(RGS, Idip, params, AC, 'Idip_2');
+	plot(ax0, xmconc, D2R./stdD2R   ,'--','LineWidth',2, 'Color', grey);
+	plot(ax0, xmconc, D2R_2./stdD2R ,'--','LineWidth',2, 'Color', grey);
+
+	D2R   = theory_asymptote(RGS, Io, params, AC, 'Io_1');
+	D2R_2 = theory_asymptote(RGS, Io, params, AC, 'Io_2');
+	plot(ax1, xmconc, D2R./stdD2R   ,'--','LineWidth',2, 'Color', grey);
+	plot(ax1, xmconc, D2R_2./stdD2R ,'--','LineWidth',2, 'Color', grey);
 
 	D2R   = theory_asymptote(RGS, T1_2, params, AC, 'T1_2');
-	plot(ax2, xmconcs, D2R./stdD2R,'--','LineWidth',2 , 'Color', grey);
+	plot(ax2, xmconc, D2R./stdD2R,'--','LineWidth',2 , 'Color', grey);
 
 
 %%%
@@ -85,7 +95,7 @@
 %%%
 
 function plot_heatmap(fig, ax, xmconcs, ymconcs, i_theory);
-	Io   = [0.75, 0.98]; 
+	Io   = [0.70, 0.98]; 
 	Io_line_color = 'None'; % [0, 0, 1];
 	Io_panel_color = [0.9, 0.9, 1;
 				0.85, 0.85, 1;

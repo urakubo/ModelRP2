@@ -3,6 +3,7 @@
 %%%% Init
 %%%%
 
+
 	clear;
 	addpath('./model');
 	addpath('./funcs');
@@ -17,64 +18,68 @@
 	mult_concs = 10.^[-1:0.1:1];
 	width = 1;
 
-	% targs = {'Gi_Gbc'};
-	% mult_concs = 10.^[-2:0.1:2];
-	% width = 1.15;
-
-%%%
+%%{
+	targs = {'Gi_Gbc'};
+	mult_concs = 10.^[-2:0.1:2];
+	width = 1.15;
+%%}
 
 	fig = figure;
 	for i = 1:numel(targs);
 
-		%% Sim
 		targ = targs{i};
 		fprintf('Target: %s \n', targ);
-		[t_sim, i_sim] =  sim_1D( targ, mult_concs, species, model, Toffset);
+
+		%% Sim
+		[i_sim, idip_sim, t_sim] =  sim_1D( targ, mult_concs, species, model, Toffset);
 
 		%% Theory
-		mD2R = ones(size(mult_concs)) *  species{'D2R','Obj'}.InitialAmount;
-		mRGS = ones(size(mult_concs)) *  species{'RGS','Obj'}.InitialAmount;
-		mAC  = ones(size(mult_concs)) *  species{'AC1','Obj'}.InitialAmount;
-		switch targ
-			case 'D2R'
-				mD2R = mult_concs .* mD2R;
-			case 'RGS'
-				mRGS = mult_concs .* mRGS;
-			case 'AC1'
-				mAC = mult_concs .* mAC;
-		end;
-		[ i_th, t_th ] = theory(mD2R, mAC, mRGS, params);
+		[D2Rtot, RGStot, ACtot] = obtain_init_concs_1D( species, targ, mult_concs );
+		[ i_th, idip_th, t_th ] = theory(D2Rtot, ACtot, RGStot, params);
+
 
 		%% Plot
 		xrange = [min(mult_concs), max(mult_concs)];
 
 		yrange = [0.01,10];
 		col = [1,0.8,0.8];
-		a2 = plot_prep(fig, xrange, yrange,  targ, '(s)', i, width);
-		set(a2, 'YScale', 'log');
-		set(a2, 'YTick', 10.^(-2:1));
-		set(a2, 'YTickLabel',  num2str( get(gca,'YTick')' ,'%g'));
+		a2 = prep_plot(fig, xrange, yrange,  targ, '(s)', i, width);
+
 		plot_paint(a2, mult_concs,  (t_sim < 0.5),  yrange, col)
 		plot(a2, mult_concs, t_sim, 'k-', 'LineWidth',2);
 		plot(a2, mult_concs, t_th , 'r:', 'LineWidth',2);
-		plot(a2, [1 1], yrange, 'k:', 'LineWidth', 0.5);
-%
-		plot(a2, xrange, [yrange(1) yrange(1)], 'k-');
-		plot(a2, [xrange(1) xrange(1)], yrange, 'k-');
-%
+		plot_decoration(a2, xrange, yrange);
+		prep_ylog(a2);
+		
+		
 		yrange = [0,120];
-		col = [0.8,0.8,1];
+		col    = [0,0,1];
+		whi    = [1,1,1];
 
-		a1 = plot_prep(fig, xrange, yrange, targ, '(% Total)', i+4, width);
-		plot_paint(a1, mult_concs,  (i_sim > 0.75),  yrange, col)
+		a1 = prep_plot(fig, xrange, yrange, targ, '(% Total)', i+4, width);
+		plot_paint(a1, mult_concs,  (i_sim > 0.7),  yrange, col*0.2+whi*0.8)
 		plot(a1,   mult_concs, i_sim*100, 'k-', 'LineWidth',2);
-		plot(a1,   mult_concs, i_th*100, 'b:', 'LineWidth',2);
-		plot(a1, [1 1], yrange, 'k:', 'LineWidth', 0.5);
-%
-		plot(a1, xrange, [yrange(1) yrange(1)], 'k-');
-		plot(a1, [xrange(1) xrange(1)], yrange, 'k-');
-%
+		plot(a1,   mult_concs, i_th*100, ':', 'LineWidth',2, 'Color', col);
+		plot_decoration(a1, xrange, yrange);
+
+		col = [0, 0.5, 1];
+		a3 = prep_plot(fig, xrange, yrange, targ, '(% Total)', i+8, width);
+
+		plot_paint(a3, mult_concs,  (idip_sim < 0.30),  yrange, col*0.2+whi*0.8)
+		plot(a3,   mult_concs, idip_sim*100, 'k-', 'LineWidth',2);
+		plot(a3,   mult_concs, idip_th*100, ':', 'LineWidth',2, 'Color', col);
+
+	%{
+		plot_paint(a3, mult_concs,  ((i_sim + idip_sim)./2 > 0.5),  yrange, col*0.2+whi*0.8)
+		plot(a3,   mult_concs, (i_sim + idip_sim)./2*100, 'k-', 'LineWidth',2);
+		plot(a3,   mult_concs, (i_th + idip_th)./2*100, ':', 'LineWidth',2, 'Color', col);
+	%}
+
+		plot_decoration(a3, xrange, yrange)
+
 	end
+
+
 
 %%%
 %%%
@@ -91,11 +96,11 @@ function plot_paint(a, xx, paint_area,  yrange, color)
 end
 
 
-function ax = plot_prep(fig, xx, zz , xtitle, ztitle, i, width)
+function ax = prep_plot(fig, xx, zz , xtitle, ztitle, i, width)
 	ii = i - 1;
 	row = floor(ii / 4);
 	col = mod(ii, 4);
-	ax = axes(fig, 'Position',[(0.1+col*0.225), (0.7-row*0.3),  0.13 * width,  0.18]); %%
+	ax = axes(fig, 'Position',[(0.1+col*0.225), (0.7-row*0.3),  1.15 * 0.13 * width,  0.18]); %%
 
 	ax.ActivePositionProperty = 'Position';
 	box off;
@@ -111,4 +116,38 @@ function ax = plot_prep(fig, xx, zz , xtitle, ztitle, i, width)
 	ax.Clipping = 'on';
 	ax.ClippingStyle = 'rectangle';
 end
+
+
+function [iD2R, iRGS, iAC1] = obtain_init_concs_1D( species, targ, mult_concs )
+
+	iD2R = ones(size(mult_concs)) *  species{'D2R','Obj'}.InitialAmount;
+	iRGS = ones(size(mult_concs)) *  species{'RGS','Obj'}.InitialAmount;
+	iAC1 = ones(size(mult_concs)) *  species{'AC1','Obj'}.InitialAmount;
+	% fprintf('obtain_init_concs, %s \n',  targ);
+	% fprintf('iD2R, iRGS, iAC1: %g, %g, %g \n', iD2R(1,1), iRGS(1,1), iAC1(1,1));
+	switch targ
+		case 'D2R'
+			iD2R = mult_concs .* iD2R;
+		case 'RGS'
+			iRGS = mult_concs .* iRGS;
+		case 'AC1'
+			iAC1 = mult_concs .* iAC1;
+		otherwise
+			fprintf("Error: %s\n", targ);
+	end;
+
+end
+
+function plot_decoration(ax, xrange, yrange)
+	plot(ax, [1 1], yrange, 'k:', 'LineWidth', 0.5);
+	plot(ax, xrange, [yrange(1) yrange(1)], 'k-');
+	plot(ax, [xrange(1) xrange(1)], yrange, 'k-');
+end
+
+function prep_ylog(ax)
+	set(ax, 'YScale', 'log');
+	set(ax, 'YTick', 10.^(-2:1));
+	set(ax, 'YTickLabel',  num2str( get(gca,'YTick')' ,'%g'));
+end
+
 

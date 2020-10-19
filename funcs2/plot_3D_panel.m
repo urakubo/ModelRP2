@@ -1,7 +1,7 @@
 %%
 %%
 %%
-function [fig, ax] = plot_3D_panel(T, A, targs, concs, standards)
+function [fig, ax] = plot_3D_panel(T, A, targs, concs, standards, col)
 
 	T = permute(T ,[2 1 3]);
 	A = permute(A ,[2 1 3]);
@@ -29,7 +29,10 @@ function [fig, ax] = plot_3D_panel(T, A, targs, concs, standards)
 	[f{5},v{5}]    = isosurface(xconcs, yconcs, zconcs, both, 0.5);
 	[f{6},v{6},ic] = isocaps(xconcs, yconcs, zconcs, both, 0.5);
 
-	col = {'red','red','blue','blue','magenta','magenta'};
+	alpha = [0.2, 0.1,  0.2, 0.1, 0.2, 0.2];
+	ci    = [1, 1,  2, 2, 3, 3];
+
+%	col = {'red','red','blue','blue','magenta','magenta'};
 
 	fig = figure;
 	loc = fig.Position;
@@ -56,14 +59,13 @@ function [fig, ax] = plot_3D_panel(T, A, targs, concs, standards)
 	ylim(yminmax);
 	zlim(zminmax);
 	axis square;
-	alpha = 0.1;
 	
 	hold on;
 %%%
 	for i = 1:numel(f);
 		p = patch('Faces', f{i}, 'Vertices', v{i});       % draw the outside of the volume
-		p.FaceAlpha = alpha;
-		p.FaceColor = col{i};
+		p.FaceAlpha = alpha(i);
+		p.FaceColor = col{ci(i)};
 		p.EdgeColor = 'none';
 		% if ismember(i,[2,4,6]); reducepatch(p, 0.2); end;
 	end

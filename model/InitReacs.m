@@ -41,13 +41,19 @@ function InitReacs(model, species, params, check); % TYPE : D1 or D2
 	eid = ReacEnz('AC1_Gi_GTP', 'RGS', 'AC1_Gi_GDP'			, 'Km_hyd_Gi' , 'kcat_hyd_Gi' , model);
 
 
-	%% Constant species
-	set(species{'DA_basal','Obj'}, 'ConstantAmount', true);
 
-	%%
 	%% AC1
-	%%
+
 	r = addrule(model,'Gi_unbound_AC  = AC1', 'repeatedAssignment');
 	r = addrule(model,'AllGi = Gi_Gbc + Gi_GTP + Gi_GDP + AC1_Gi_GTP + AC1_Gi_GDP', 'repeatedAssignment');
+
+	%% Constant species
+
+	set(species{'DA_basal','Obj'}, 'ConstantAmount', true);
+
+%	set(species{'DA_basal','Obj'}, 'ConstantAmount', false);
+	set(species{'DA_basal','Obj'}, 'BoundaryCondition', true);
+	set(species{'DA_dip','Obj'}, 'ConstantAmount', true);
+	set(species{'DA_dip','Obj'}, 'BoundaryCondition', true);
 
 

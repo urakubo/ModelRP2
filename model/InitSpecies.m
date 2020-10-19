@@ -3,7 +3,7 @@
 %%
 
 %%
-function init_species = InitSpecies(DAbasal);
+function init_species = InitSpecies(DAbasal, DAdip);
 %%
 
 %%
@@ -11,7 +11,7 @@ function init_species = InitSpecies(DAbasal);
 	InitGi		 = m * 15 	;
 	InitD2R		 = m * InitGi ./30	; 
 	InitGbc		 = m * 10; 
-	InitAC		 = m * InitGi ./30 ;
+	InitAC		 = m * InitGi ./30 /2  ;
 	InitRGS		 = m * (InitGbc+InitGi) / 2 /5;
 %%
 %%
@@ -30,6 +30,7 @@ function init_species = InitSpecies(DAbasal);
 %
 		'DA'			, DAbasal		;
 		'DA_basal'		, DAbasal		;
+		'DA_dip'		, DAdip			;
 		'D2R'			, InitD2R		;
 		'DA_D2R'		, 0				;
 		'Gbc'			, InitGbc		; 

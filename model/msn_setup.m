@@ -10,9 +10,9 @@ function [model, species, params, Toffset] = msn_setup(check)
 	durDA = stop_time - Toffset_DA;
 
 	DAbasal = 0.5;
+	DAdip   = 0.05;
 
-
-	init_species = InitSpecies(DAbasal);
+	init_species = InitSpecies(DAbasal, DAdip);
 	init_params  = InitParams()
 	[model, species, params] = DefineModel(init_species, init_params, stop_time);
 	InitReacs(model, species, params, check);
@@ -32,11 +32,7 @@ function [model, species, params, Toffset] = msn_setup(check)
 	tDA     = addparameter(model, 'Toffset_DA'  , Toffset_DA);
 	durDA   = addparameter(model, 'durDA'  , durDA);
 
-	set(species{'DA_basal','Obj'}, 'ConstantAmount', false);
-	set(species{'DA_basal','Obj'}, 'BoundaryCondition', true);
-
-
-	e1   = addevent(model,'time>=Toffset_DA+0'      , 'DA = 0' );
+	e1   = addevent(model,'time>=Toffset_DA+0'      , 'DA = DA_dip' );
 	e1   = addevent(model,'time>=Toffset_DA+durDA'  , 'DA = DA_basal' );
 
 	fprintf('\n');
