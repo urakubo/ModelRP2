@@ -72,13 +72,22 @@
 		end
 		model.Parameters(14).Value = 100000;
 		sd = run_sbiosimulate(model, species, targs_change{k}, mults{k});
-		% [io, idip] = Obtain_Io_Idip(sd, Toffset);
-		% fprintf('%s, Io: %g, Idip; %g\n', targs_change_title{k}, io, idip);
+		[io, idip] = Obtain_Io_Idip(sd, Toffset);
+		fprintf('%s, Io: %g, Idip; %g\n', targs_change_title{k}, io, idip);
+
+%		[AC1_disinhibitied_o, AC1_disinhibited_dip] = Obtain_AC1_disinhibited(sd, Toffset);
+%		fprintf('%s, AC_disinhibitied_o: %g, AC1_disinhibited_dip; %g\n', ...
+			targs_change_title{k}, AC1_disinhibitied_o, AC1_disinhibited_dip );
+
 		[Gi_GTPo, Gi_GTPdip] = Obtain_Gi_GTP(sd, Toffset);
 		fprintf('%s, Gi_GTPo: %g uM, Gi_GTPdip; %g uM\n', targs_change_title{k}, Gi_GTPo, Gi_GTPdip);
 	end
 %%%
 
+function [AC1_disinhibited_o, AC1_disinhibited_dip] = Obtain_AC1_disinhibited(sd, Toffset)
+		AC1_disinhibited_o   = obtain_conc('AC1', sd, Toffset);
+		AC1_disinhibited_dip = sd.Data(end, find( strcmp( sd.DataNames, 'AC1' )) );
+end
 
 function [io, idip] = Obtain_Io_Idip(sd, Toffset)
 		AC1tot     = obtain_conc('AC1', sd, 0);

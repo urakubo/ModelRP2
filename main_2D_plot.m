@@ -61,7 +61,6 @@
 			[fig, ax] = prep_plot_panel(targ, mconc, 'Althgether' );
 			alpha = 0.1;
 			plot_sim3(ax, targ, mconc, idip_sim, io_sim, t_half_sim, Io, Idip, T1_2, alpha );
-			% contour(ax, mconc{1}, mconc{2},  t_half_sim', [T1_2 T1_2],'-','Color',lred,'LineWidth',2);
 			plot_standard_conc(ax, mconc);
 			mults = {[1.0, 1.0], [0.5,0.5], [0.5, 4.0], [2.0, 0.5]};
 			cols  = {  [1 1 1]*0.5, [0 1 0], [0 0 1], [1 0 0] };

@@ -17,9 +17,10 @@
 	mults = {[], [0.5,0.5], [4, 0.5], [0.5, 2.0]};
 	cols = {  [1 1 1]*0.5, [0 1 0], [0 0 1], [1 0 0]  };
 
-	durDA  = 0.0125*2.^[0:15]
+	durDA  = 0.00125*2.^[0:0.5:15]
 	trange = [0.04, 40];
-	yrange  = [-0.01,0.05];
+	trange = [0.01, 40];
+	yrange  = [-10,50];
 
 	NUMd  = numel(durDA);
 	for i = 1:numel(durDA); durDA_leg{i} = sprintf('%g s', durDA(i)); end
@@ -30,10 +31,10 @@
 
 	% trange  = [min(durDA),max(durDA)];
 
-	a = plot_prep(fig, trange, yrange, 'Duration (s)', 'ACfree uM.s/s');
-	yticks([0:0.02:0.04]);
+	a = plot_prep(fig, trange, yrange, 'Duration (s)', 'ACresponse (%)');
+	yticks([0:20:40]);
 	plot(a, trange, [0 0], 'k:');
-	plot(a, [1 1]*0.5, yrange, 'k:' )
+	plot(a, [1 1]*0.5, yrange, 'k:' );
 
 
 %%%
@@ -47,9 +48,11 @@
 			model.Parameters(14).Value = durDA(j);
 			sd = run_sbiosimulate(model, species, targs_change{i}, mults{i});
 
-			[t, Conc]       = obtain_profile('Gi_unbound_AC', sd, Toffset );
-			Gi_unbound_AC_0 = interp1(t, Conc, 0);
-			results(j,1) = integ(t, Conc-Gi_unbound_AC_0, [0, 100]) ./ durDA(j) ;
+			% [t, Conc]       = obtain_profile('Gi_unbound_AC', sd, Toffset );
+			% Gi_unbound_AC_0 = interp1(t, Conc, 0);
+			[t,Io_Idip]       = Obtain_Io_Idip(sd, Toffset, AC1_tot);
+
+			results(j,1) = integ(t, Io_Idip, [0, 100]) ./ durDA(j) ;
 
 		end
 
@@ -57,14 +60,25 @@
 		Gi_GTP_0 = interp1(t, Conc, 0);
 		fprintf('%s : %g \n', targs_change_title{i}, Gi_GTP_0 )
 
-		plot(a, durDA, results - results(1,1), 'o-', ...
+		plot(a, durDA, (results - results(1,1)) * 100, '-', ...
 			'Color', cols{i}, ...
 			'MarkerFaceColor', cols{i}, ...
 			'MarkerSize', 3, ...
-			'LineWidth', 1.5);
+			'LineWidth', 2);
 
 	end
 %%
+
+function [t,Io_Idip] = Obtain_Io_Idip(sd, Toffset, AC1tot)
+		AC1GTPo    = obtain_conc('AC1_Gi_GTP', sd, Toffset);
+		AC1GDPo    = obtain_conc('AC1_Gi_GDP', sd, Toffset);
+		[t, AC1GTP]     = obtain_profile( 'AC1_Gi_GTP' , sd, Toffset );
+		[t, AC1GDP]     = obtain_profile( 'AC1_Gi_GDP' , sd, Toffset );
+		io         =  ( AC1GTPo + AC1GDPo )./AC1tot;
+		idip       =  ( AC1GTP + AC1GDP )./AC1tot;
+		Io_Idip    =  io - idip;
+		
+end
 
 %%%
 %%%
