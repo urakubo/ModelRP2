@@ -32,7 +32,7 @@ Matlab plus the toolbox SimBiology. We confirmed safe executions of uploaded pro
 This project is licensed under the MIT license - see the [LICENSE](LICENSE) file for details.
 
 ## Reference
-A healthy balance between dopamine D2 receptors and RGS enables regret-signal detection in the striatum
+The critical balance between dopamine D2 receptor and RGS for the sensitive detection of a transient decay in dopamine signal
 
 Hidetoshi Urakubo, Sho Yagishita, Haruo Kasai, Yoshiyuki Kubota, and Shin Ishii
 
