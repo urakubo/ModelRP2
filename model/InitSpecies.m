@@ -31,7 +31,7 @@ function init_species = InitSpecies();
 
 
 	spec   = {
-		'AllGi'			, 0				;
+%		'AllGi'			, 0				;
 %
 		'None'			, 0				;
 		'DAT'			, 1				;
