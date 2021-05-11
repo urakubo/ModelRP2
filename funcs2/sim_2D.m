@@ -1,10 +1,10 @@
 
-function [ io_sim, idip_sim, t_half_sim ] = sim_2D(concs, targs, species, model, Toffset)
+function [ AC_basal_sim, AC_dip_sim, t_half_sim ] = sim_2D(concs, targs, species, model, Toffset)
 
 	nums = [numel(concs{1}), numel(concs{2})] ;
 	t_half_sim  = zeros( nums );
-	io_sim      = zeros( nums );
-	idip_sim    = zeros( nums );
+	AC_basal_sim  = zeros( nums );
+	AC_dip_sim    = zeros( nums );
 
 	reserv1 = species{targs{1},'Obj'}.InitialAmount;
 	reserv2 = species{targs{2},'Obj'}.InitialAmount;
@@ -20,21 +20,15 @@ function [ io_sim, idip_sim, t_half_sim ] = sim_2D(concs, targs, species, model,
 				sd   = sbiosimulate(model);
 				
 				%% time
-				t_half_sim(i,j) = obtain_half('Gi_unbound_AC', sd, Toffset);
+				t_half_sim(i,j) = obtain_half('ACact', sd, Toffset);
 				
-				%% Inhibition
-				AC1tot = obtain_conc('AC1', sd, 0);
-				AC1GTP = obtain_conc('AC1_Gi_GTP', sd, Toffset);
-				AC1GDP = obtain_conc('AC1_Gi_GDP', sd, Toffset);
+				%%
+				AC1tot   = obtain_conc('AC1', sd, 0);
+				ACact    = obtain_conc('ACact', sd, Toffset);
+				ACact_end = sd.Data(end, find( strcmp( sd.DataNames, 'ACact' )) );
 
-				AC1GTP_end = sd.Data(end, find( strcmp( sd.DataNames, 'AC1_Gi_GTP' )) );
-				AC1GDP_end = sd.Data(end, find( strcmp( sd.DataNames, 'AC1_Gi_GDP' )) );
-
-				AC1GTP = obtain_conc('AC1_Gi_GTP', sd, Toffset);
-				AC1GDP = obtain_conc('AC1_Gi_GDP', sd, Toffset);
-
-				io_sim(i,j)   = ( AC1GTP + AC1GDP )./AC1tot;
-				idip_sim(i,j) = ( AC1GTP_end + AC1GDP_end )./AC1tot;
+				AC_basal_sim(i,j)  = ACact;
+				AC_dip_sim(i,j)    = ACact_end;
 		end
 	end
 

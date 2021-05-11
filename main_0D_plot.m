@@ -10,6 +10,7 @@
 
 % Fig1C
 
+%{
 	targs_plot  = {'DA','Gi_unbound_AC'};
 	yranges  = {[-0.12, 1]*0.8,  [-0.02,0.12]};
 
@@ -17,27 +18,33 @@
 	colors  = { [1 1 1]*0.7, [1 1 1]*0.4, [1 1 1]*0 };
 	linew = { 1.5, 1.5, 2 };
 	mults = {[4, 1], [1/4, 1],[]};
+%}
 
 % S1 Fig
 
-%{
-	targs_plot  = {'DA','DA_D2R','Gi_unbound_AC','Gi_Gbc', ...
-		'Gi_GTP','Gi_GDP','AC1_Gi_GDP','AC1_Gi_GTP'};
+%%{
 	pm = [-0.12, 1];
-	yranges  = {pm*0.8, pm*0.02, pm*0.12, pm*15, ...
-		 pm*0.5, pm*0.5, pm*0.12,  pm*0.12 };
+	targs_plot  = {'DA','DA_D2R', ...
+		'Gi_GTP','Gi_GDP','AC1_Gi_GDP','AC1_Gi_GTP','Golf_AC1', 'ACact'};
+	yranges  = {pm*0.8, pm*0.02,  ...
+		 pm*0.5, pm*0.5, pm*0.12,  pm*0.12,  pm*0.12 ,  pm};
+
 	targs = {{}};
 	colors  = {[1 1 1]*0 };
 	linew   = {2};
 	mults   = {1};
-%}
+%%}
 
 %
+	flag_competitive 		= 1;
+	flag_Gi_sequestrated_AC = 1;
+	flag_optoDA 			= 1;
+	flag_duration 			= 1;
+	stop_time  = 6;
+	Toffset_DA = 3;
 
-	check = 0;
-	durDA = 1;
-	[model, species, params, Toffset] = msn_setup(check);
-	model.Parameters(14).Value = durDA;
+	[model, species, params, Toffset] = ...
+	msn_setup(flag_competitive, flag_Gi_sequestrated_AC, flag_optoDA, flag_duration, stop_time, Toffset_DA);
 	trange  = [-1,3];
 	ylegend  = '(uM)';
 
@@ -55,7 +62,12 @@
 	yticks(a{1},[0 0.5]);
 
 % Run & Plot
-
+%{
+	targ = 'Golf';
+	init_conc = species{ targ,'Obj'}.InitialAmount;
+	fprintf('%s, init conc: %g\n', targ, init_conc);
+	species{ targ,'Obj'}.InitialAmount = init_conc * 10;
+%}
 	for j = 1:numel(targs);
 		sd = run_sbiosimulate(model, species, targs{j}, mults{j})
 		for i = 1:numel(targs_plot);
@@ -67,24 +79,24 @@
 %
 
 function sd = run_sbiosimulate(model, species, targ, mult)
-	reservs = change_conc(targ, species, mult)
+	reservs = change_conc(targ, species, mult);
 	sd = sbiosimulate(model);
-	restore_conc(targ, species, reservs)
+	restore_conc(targ, species, reservs);
 end
 
 
 function reservs = change_conc(targ, species, mult)
 	reservs = {};
-	for i = 1: numel(targ)
-		reservs{i} = species{targ{i},'Obj'}.InitialAmount;
-		species{targ{i},'Obj'}.InitialAmount = reservs{i} * mult(i);
+	for k = 1: numel(targ)
+		reservs{k} = species{targ{k},'Obj'}.InitialAmount;
+		species{targ{k},'Obj'}.InitialAmount = reservs{k} * mult(k);
 	end
 end
 
 
 function restore_conc(targ, species, reservs)
-	for i = 1: numel(targ)
-		species{targ{i},'Obj'}.InitialAmount = reservs{i};
+	for k = 1: numel(targ)
+		species{targ{k},'Obj'}.InitialAmount = reservs{k};
 	end
 end
 

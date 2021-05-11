@@ -10,9 +10,9 @@
 	init_font;
 	fprintf('\n');
 
-	T1_2  = 0.5;  %
-	Io    = 0.7; %
-	Idip  = 0.3; %
+	T1_2     = 0.5;  %
+	AC_basal = 0.3; %
+	AC_dip   = 0.7; %
 
 	data_dir = 'data';
 	TITLE = '2D';
@@ -20,8 +20,8 @@
 %%
 %% 2D plot
 %%
-
-	dims = { [3,1], [2,1], [2,3] };
+	targs = {'D2R', 'AC1' ,'RGS' ,'Gi_Gbc' ,'Golf'};
+	dims = { [3,1], [2,1], [2,3], [3,5] };
 %	dims = { [3,1] };
 
 	for  i = 1:numel(dims);
@@ -30,24 +30,24 @@
 		load(FILENAME);
 		targ = targs(dims{i});
 
-
 		% Fig1
-		%{
-		[fig, ax] = prep_plot_panel(targ, mconc, 'Io and Idip' );
-		plot_sim1(ax, targ, mconc, idip_sim, io_sim, t_half_sim, Io, Idip, T1_2 )
-		contour(ax, mconc{1}, mconc{2},  io_theory', [Io Io],'b:','LineWidth',2);
-		contour(ax, mconc{1}, mconc{2},  idip_theory', [Idip Idip],':','LineWidth',2,'Color',[0,0.5,1]);
+		%%{
+		[fig, ax] = prep_plot_panel(targ, mconc, 'ACbasal and ACdip' );
+		plot_sim1(ax, targ, mconc, AC_dip_sim, AC_basal_sim, AC_t_sim, AC_basal, AC_dip, T1_2 )
+		contour(ax, mconc{1}, mconc{2},  AC_basal_th', [AC_basal AC_basal],'b:','LineWidth',2);
+		contour(ax, mconc{1}, mconc{2},  AC_dip_th', [AC_dip AC_dip],':','LineWidth',2,'Color',[0,0.5,1]);
 		plot_standard_conc(ax, mconc);
 
 		[fig, ax] = prep_plot_panel(targ, mconc, ' T1/2' );
-		plot_sim2(ax, targ, mconc, t_half_sim,  T1_2 )
-		contour(ax, mconc{1}, mconc{2},  t_half_theory', [T1_2 T1_2],'r:','LineWidth',2);
+		plot_sim2(ax, targ, mconc, AC_t_sim,  T1_2 )
+		contour(ax, mconc{1}, mconc{2},  AC_t_th', [T1_2 T1_2],'r:','LineWidth',2);
 		plot_standard_conc(ax, mconc);
-		%}
+		%%}
 
 
 
 		%% Fig 6.
+		%{
 		if isequal(dims{i}, [3,1])
 		
 			lred = [1, 0.5, 0.5];
@@ -80,6 +80,7 @@
 			plot(ax, lRGS, lD2R, '-', 'LineWidth', 2,'Color', [1,1,1]*0.5);
 			
 		end
+		%}
 		%%
 
 	end
@@ -99,36 +100,36 @@ function [fig, ax] = prep_plot_panel(targs, mconc, t_title )
 	hold on;
 end
 
-function plot_sim1(ax, targ, mconc, idip_sim, io_sim, t_half_sim, Io, Idip, T1_2 )
+function plot_sim1(ax, targ, mconc, AC_dip_sim, AC_basal_sim, AC_t_sim, AC_basal, AC_dip, T1_2 )
 
 	intensity = 0.2; %0-1
 
 	mymap = [1 1 1;0 0.5 1;0 0 1;1 0 0];
 	colormap(ax, mymap);
-	im1 = imagesc( ax, 'XData', mconc{1},'YData', mconc{2}, 'CData', 0.33*(idip_sim < Idip)', [0 1]);
+	im1 = imagesc( ax, 'XData', mconc{1},'YData', mconc{2}, 'CData', 0.33*(AC_dip_sim > AC_dip)', [0 1]);
 	im1.AlphaData = intensity;
-	im1 = imagesc( ax, 'XData', mconc{1},'YData', mconc{2}, 'CData', 0.66*(io_sim > Io)', [0 1]);
+	im1 = imagesc( ax, 'XData', mconc{1},'YData', mconc{2}, 'CData', 0.66*(AC_basal_sim < AC_basal)', [0 1]);
 	im1.AlphaData = intensity;
 
 end
 
-function plot_sim2(ax, targ, mconc, t_half_sim,  T1_2 )
+function plot_sim2(ax, targ, mconc, AC_t_sim,  T1_2 )
 
 	intensity = 0.2; %0-1
 
 	mymap = [1 1 1;0 0.5 1;0 0 1;1 0 0];
 	colormap(ax, mymap);
-	im1 = imagesc( ax, 'XData', mconc{1},'YData', mconc{2}, 'CData', (t_half_sim < T1_2)', [0 1]);
+	im1 = imagesc( ax, 'XData', mconc{1},'YData', mconc{2}, 'CData', (AC_t_sim < T1_2)', [0 1]);
 	im1.AlphaData = intensity;
 
 end
 
-function plot_sim3(ax, targ, mconc, idip_sim, io_sim, t_half_sim, Io, Idip, T1_2, alpha )
+function plot_sim3(ax, targ, mconc, AC_dip_sim, AC_basal_sim, AC_t_sim, AC_basal, AC_dip, T1_2, alpha )
 
 
 	%{
-	target_area1 = (idip_sim < Idip)' .* (io_sim > Io)' ;
-	target_area2 = (idip_sim < Idip)' .* (io_sim > Io)' .* (t_half_sim < T1_2)' ;
+	target_area1 = (AC_dip_sim > AC_dip)' .* (AC_basal_sim > AC_basal)' ;
+	target_area2 = (AC_dip_sim < AC_dip)' .* (AC_basal_sim > AC_basal)' .* (AC_t_sim < T1_2)' ;
 	target_area  = (target_area1 + target_area2) / 2;
 	a = 0.85;
 	b = 0.7;
@@ -137,16 +138,14 @@ function plot_sim3(ax, targ, mconc, idip_sim, io_sim, t_half_sim, Io, Idip, T1_2
 	im1 = imagesc( ax, 'XData', mconc{1},'YData', mconc{2}, 'CData', target_area, [0 1]);
 	%}
 
-	target_area1 = (idip_sim < Idip)' .* (io_sim > Io)' ;
-	target_area2 = (t_half_sim < T1_2)' ;
+	target_area1 = (AC_dip_sim > AC_dip)' .* (AC_basal_sim > AC_basal)' ;
+	target_area2 = (AC_t_sim < T1_2)' ;
 	mymap = [1 1 1;0 0 1;1 0 0];
 	colormap(ax, mymap);
 	im1 = imagesc( ax, 'XData', mconc{1},'YData', mconc{2}, 'CData', target_area2, [0 1]);
 	im1.AlphaData = alpha;
 	im1 = imagesc( ax, 'XData', mconc{1},'YData', mconc{2}, 'CData', 0.5*target_area1, [0 1]);
 	im1.AlphaData = alpha;
-
-
 
 end
 

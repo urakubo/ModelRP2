@@ -8,7 +8,10 @@ function init_params = InitParams();
 
 	spec  = {
 		'Zero'				, 0			;
-
+%
+		'Km_DAT'			, 0.2;
+		'kcat_DAT'			, 4;
+%
 		'kf_DA_D2R'			, 10	; %% 100倍 (19/5/23)
 		'kb_DA_D2R'			, 100	; %% 100倍 (19/5/23)
 
@@ -23,6 +26,9 @@ function init_params = InitParams();
 %
 		'kon_AC_GiGDP'		, a*20	 ; %%% 
 		'koff_AC_GiGDP'		, a*21.6 ; %%% 
+%
+		'kon_AC_GolfGTP'	, 5*40	 ; %%% 
+		'koff_AC_GolfGTP'	, 5*4 	; %%% 
 %
 		'kon_Gbc_Gi'		, 10	; %%% 
 

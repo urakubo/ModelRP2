@@ -2,7 +2,7 @@
 %%
 %%
 
-function init_concs = obtain_init_concs_2D( species, targ, conc, output_targs )
+function init_concs = init_concs_2D( species, targ, conc, output_targs )
 
 	nums = [numel(conc{1}), numel(conc{2})] ;
 

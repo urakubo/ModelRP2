@@ -11,8 +11,14 @@
 
 	init_font;
 
-	check = 0;
-	[model, species, params, Toffset] = msn_setup(check);
+	flag_competitive 		= 0;
+	flag_Gi_sequestrated_AC = 1;
+	flag_optoDA 			= 0;
+	flag_duration 			= -1;
+	stop_time  = 6;
+	Toffset_DA = 3;
+	[model, species, params, Toffset] = ...
+		msn_setup(flag_competitive, flag_Gi_sequestrated_AC, flag_optoDA, flag_duration, stop_time, Toffset_DA);
 
 	sd   = sbiosimulate(model);
 
@@ -34,11 +40,11 @@
 	yrange = [0,110];
 	a2 = plot_prep(fig, trange, yrange, 'Time (s)', '(%total)', 5);
 
-	tname = 'Gi_unbound_AC';
+	tname = 'ACact';
 	[T, DATA] = obtain_profile(tname, sd, Toffset);
 	t_half    = obtain_half(tname, sd, Toffset);
-	AC1tot = obtain_conc('AC1', sd, 0);
-	DATA = DATA./AC1tot;
+	% AC1tot = obtain_conc('AC1', sd, 0);
+	% DATA = DATA./AC1tot;
 
 	data_stable = interp1(T, DATA, Toffset);
 	data_half   = interp1(T, DATA, t_half); % vq = interp1(x,v,xq)
