@@ -1,6 +1,8 @@
-%%%%
-%%%% Init
-%%%%
+%%
+%% 2D plot
+%%
+
+% Init
 
 	clear;
 	addpath('./model');
@@ -14,8 +16,12 @@
 	AC_basal = 0.3; %
 	AC_dip   = 0.7; %
 
+
+	flag_competitive 		= 0;
+	flag_Gi_sequestrated_AC = 1;
+
 	data_dir = 'data';
-	TITLE = '2D';
+	TITLE = sprintf('2D_Compet_%g_Sequest_%g', flag_competitive, flag_Gi_sequestrated_AC);
 
 %%
 %% 2D plot
