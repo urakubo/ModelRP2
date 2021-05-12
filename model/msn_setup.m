@@ -40,8 +40,8 @@ function [model, species, params, Toffset_DA] = msn_setup(flag_competitive, flag
 	%%
 	%% Add event
 	%%
-	addparameter(model, 'durDA'  , durDA);
-	addparameter(model, 'Toffset_DA'  , Toffset_DA);
+	dur_DA = addparameter(model, 'durDA'  , durDA);
+	Toffset_DA = addparameter(model, 'Toffset_DA'  , Toffset_DA);
 
 	%% Continuous DA
 	if (flag_optoDA == 0)
