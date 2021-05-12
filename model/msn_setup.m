@@ -1,7 +1,7 @@
 %%
 %% MSN setup
 %%
-function [model, species, params, Toffset_DA] = msn_setup(flag_competitive, flag_Gi_sequestrated_AC, flag_optoDA, flag_duration, varargin)
+function [model, species, params, container] = msn_setup(flag_competitive, flag_Gi_sequestrated_AC, flag_optoDA, flag_duration, varargin)
 
 %	fprintf('nargin: %g\n',nargin);
 %	fprintf('varargin{1}: %g\n',varargin{1});
@@ -16,7 +16,6 @@ function [model, species, params, Toffset_DA] = msn_setup(flag_competitive, flag
 	    stop_time  = 3000;
 	    Toffset_DA = 100;
 	end
-	
 	%% Setting DA-dip duration
 	if flag_duration < 0
 		durDA = stop_time - Toffset_DA;
@@ -42,6 +41,8 @@ function [model, species, params, Toffset_DA] = msn_setup(flag_competitive, flag
 	%%
 	dur_DA = addparameter(model, 'durDA'  , durDA);
 	Toffset_DA = addparameter(model, 'Toffset_DA'  , Toffset_DA);
+	container = containers.Map({'dur_DA', 'Toffset_DA'}, {dur_DA, Toffset_DA})
+
 
 	%% Continuous DA
 	if (flag_optoDA == 0)
@@ -50,6 +51,9 @@ function [model, species, params, Toffset_DA] = msn_setup(flag_competitive, flag
 		e1   = addevent(model,'time>0'      			, 'DA = DA_basal' );
 		e1   = addevent(model,'time>=Toffset_DA+0'      , 'DA = DA_dip' );
 		e1   = addevent(model,'time>=Toffset_DA+durDA'  , 'DA = DA_basal' );
+
+		container('DA_basal') = DA_basal;
+		container('DA_dip')   = DA_dip;
 
 	%% Continuous DA
 	else
@@ -72,6 +76,7 @@ function [model, species, params, Toffset_DA] = msn_setup(flag_competitive, flag
 			addevent(model, condition_ , action_ );
 		end
 	end
+
 
 	fprintf('Model generated\n');
 
