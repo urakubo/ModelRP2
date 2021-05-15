@@ -43,9 +43,9 @@
 	stop_time  = 6;
 	Toffset_DA = 3;
 
-	[model, species, params, Toffset] = ...
+	[model, species, params, container] = ...
 	msn_setup(flag_competitive, flag_Gi_sequestrated_AC, flag_optoDA, flag_duration, stop_time, Toffset_DA);
-	trange  = [-1,3];
+	trange   = [-1,3];
 	ylegend  = '(uM)';
 
 % Prep. figures
@@ -71,7 +71,7 @@
 	for j = 1:numel(targs);
 		sd = run_sbiosimulate(model, species, targs{j}, mults{j})
 		for i = 1:numel(targs_plot);
-			[T, DATA] = obtain_profile(targs_plot{i}, sd, Toffset);
+			[T, DATA] = obtain_profile(targs_plot{i}, sd, Toffset_DA);
 			plot(a{i}, T, DATA, '-', 'LineWidth', linew{j}, 'Color', colors{j});
 		end
 	end

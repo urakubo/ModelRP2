@@ -4,13 +4,14 @@
 function init_params = InitParams();
 
 
-		a = 1; % 0.5, 0.2
+	a = 1; %
 
 	spec  = {
 		'Zero'				, 0			;
 %
 		'Km_DAT'			, 0.2;
-		'kcat_DAT'			, 4;
+		'kcat_DAT'			, 4.6   ; % 4.6 6.4
+		'DA_opto'			, 0.6365; % 0.6365 0.8572
 %
 		'kf_DA_D2R'			, 10	; %% 100倍 (19/5/23)
 		'kb_DA_D2R'			, 100	; %% 100倍 (19/5/23)

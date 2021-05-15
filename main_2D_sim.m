@@ -21,8 +21,10 @@
 
 	targs = {'D2R', 'AC1' ,'RGS' ,'Gi_Gbc' ,'Golf'};
 	dims = { [3,1], [2,1], [2,3] };
-	[model, species, params, Toffset] = ...
+	[model, species, params, container] = ...
 		msn_setup(flag_competitive, flag_Gi_sequestrated_AC, flag_optoDA, flag_duration);
+	Toffset = container('Toffset_DA').Value;
+
 	for j = 1:numel(targs);
 		mult_concs{j}	= 10.^[-1:0.025:1]; %	tmp = 10.^[-1:0.1:1];
 		default_conc	= species{targs{j},'Obj'}.InitialAmount;

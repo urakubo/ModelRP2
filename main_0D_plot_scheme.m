@@ -16,9 +16,9 @@
 	flag_optoDA 			= 0;
 	flag_duration 			= -1;
 	stop_time  = 6;
-	Toffset_DA = 3;
-	[model, species, params, Toffset] = ...
-		msn_setup(flag_competitive, flag_Gi_sequestrated_AC, flag_optoDA, flag_duration, stop_time, Toffset_DA);
+	Toffset    = 3;
+	[model, species, params, container] = ...
+		msn_setup(flag_competitive, flag_Gi_sequestrated_AC, flag_optoDA, flag_duration, stop_time, Toffset);
 
 	sd   = sbiosimulate(model);
 

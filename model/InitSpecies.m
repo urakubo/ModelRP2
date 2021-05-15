@@ -51,7 +51,7 @@ function init_species = InitSpecies();
 %
 		'Golf'			, InitGolf 		;
 		'Golf_AC1'		, 0				;
-		'ActiveAC'		, 0				;
+%		'ActiveAC'		, 0				;
 		'RGS'			, InitRGS		;
 %
 		'AC2'			, 1				;
@@ -63,6 +63,7 @@ function init_species = InitSpecies();
 		'ACact'			, 0				;
 %
 		};
+%
 	init_species = cell2table( spec, 'VariableNames', {'Name','Conc'});
 	init_species.Properties.RowNames = spec(:,1);
 

@@ -13,7 +13,8 @@
 	flag_Gi_sequestrated_AC = 1;
 	flag_optoDA 			= 0;
 	flag_duration 			= -1;
-	[model, species, params, Toffset] = msn_setup(flag_competitive, flag_Gi_sequestrated_AC, flag_optoDA, flag_duration);
+	[model, species, params, container] = msn_setup(flag_competitive, flag_Gi_sequestrated_AC, flag_optoDA, flag_duration);
+	Toffset = container('Toffset_DA').Value;
 
 	concs1 = 10.^[-1:0.1:1];
 	concs2 = 10.^[-2:0.1:2];
@@ -29,9 +30,8 @@
 %}
 
 	fig = figure('Name',sprintf('Competitive %g',flag_competitive));
-	fig.Position(2) = fig.Position(2)*0.5;
-	fig.Position(3) = fig.Position(3)*1.5;
-	fig.Position(4) = fig.Position(4)*1.3;
+	fig.Position = fig.Position.*[1, 0.5, 1.5, 1.3];
+
 
 	for i = 1:numel(targs);
 
@@ -50,7 +50,6 @@
 		%% Plot
 		xrange = [min(concs), max(concs)];
 
-
 		yrange = [0,120];
 		col    = [0,0,1];
 		whi    = [1,1,1];
@@ -60,7 +59,6 @@
 		plot(a1,   concs, AC_basal_sim*100, 'k-', 'LineWidth',2);
 		plot(a1,   concs, AC_basal_th*100, ':', 'LineWidth',2, 'Color', col);
 		plot_decoration(a1, xrange, yrange);
-
 
 		col = [0, 0.5, 1];
 		a3 = prep_plot_(fig, xrange, yrange, targ, 'AC_act_dip (%Total)', i+5, width);
@@ -82,7 +80,6 @@
 			title( a5, max_AC_Golf(id_Golf) )
 		end
 
-
 		yrange = [0.01,10];
 		col = [1,0.8,0.8];
 		a2 = prep_plot_(fig, xrange, yrange,  targ, '(s)', i+15, width);
@@ -92,9 +89,7 @@
 		plot_decoration(a2, xrange, yrange);
 		prep_ylog(a2);
 
-
 	end
-
 
 
 %%%
