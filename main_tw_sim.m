@@ -9,111 +9,89 @@ addpath('./funcs');
 addpath('./funcs2');
 init_font;
 
-data_dir ='data/TimeWindow/';
-img_dir ='imgs/';
+data_dir ='data/TimeWindow';
+mkdir(data_dir);
 
-Toffsets_DA  = -4:0.25:4;
-numToffsets_DA  = numel(Toffsets_DA);
+DA_delay  = -4:0.25:4;
+num_DA_delay  = numel(DA_delay);
 
 
 %%
 %% Model definition
 %%
 
-flag_optoDA      = 0;
+flag_optoDA      = 1;
 flag_competitive = 0;
 flag_duration    = 0.5;
-[model, species, params, T_VGCC, T_DA] = msn_setup_TimeWindow(flag_competitive, flag_duration, flag_optoDA);
+[model, species, params, container] = msn_setup_TimeWindow(flag_competitive, flag_duration, flag_optoDA);
+T_VGCC = container('Toffset_VGCC');
+T_DA   = container('Toffset_DA');
+d_DA   = container('duration_DA');
 
-Toffset    = T_VGCC.Value;
-T_DA.Value = T_VGCC.Value + 0.5;
+Toffset_VGCC = T_VGCC.Value;
+stop_time = get(getconfigset(model), 'StopTime');
 
 
 %%
 %% Simulation
 %%
-sd   = cell(numToffsets_DA, 1);
-
-for i = 1:numToffsets_DA;
-	fprintf('DA timing: %d / %d \n', i, numToffsets_DAs );
-	tDA.Value = Toffsets_DA(i) + Toffset_VGCC;
+sd   = cell(num_DA_delay, 1);
+for i = 1:num_DA_delay;
+	fprintf('DA timing: %d / %d \n', i, num_DA_delay );
+	T_DA.Value = DA_delay(i) + Toffset_VGCC;
 	sd{i,1} = sbiosimulate(model);
 end;
 
 
+d_DA.Value   = 0.2;
+sd_noDAdip   = sbiosimulate(model);
+d_DA.Value   = flag_duration;
+
+T_VGCC.Value = stop_time + 1;
+sd_noCa      = sbiosimulate(model);
+
+
+%%
+%% Save max concs & time courses
+%%
+targs = {	'Ct',	'cAMP' };
+% YMAX2   = {	1.5,	4 };
+max_or_min = 'max';
+
+for k = 1:numel(targs);
 
 	%%
-	%% Plot
+	%% Save max concs
 	%%
-	Ymin 	  = 0;
+	maxconcs = maxmin_concs(targs{k}, sd, Toffset_VGCC, stop_time, max_or_min);
+	save(sprintf('%s/max_%s.mat', data_dir, targs{k}), 'maxconcs');
 
-	switch TYPE
-   	case 'D1'
-		% TNAME = {	'Ca',	'ActAC1',	'DA',	'Ca',	'cAMP', 'Ct'};
-		% YMAX  = {	'1', 	0.4,		5.0,	1.6,	4, 		1.5};
-      	% TNAME = {	'Ca',	'ActiveAC',	'DA_D1R',	'Golf_bound_AC', 'AC_CaM',	'cAMP', 'Ct', 'ActiveCK'};
-		% YMAX  = {	'1', 	0.4,		 0.04,	 	1, 				1,			4, 		1.5, 	40};
-      	TNAME = {	'Ct',	'cAMP' };
-		YMAX  = {	4,	4};
-      	TNAME2 = {	'Ct',	'cAMP' };
-		YMAX2  = {	4,	4};
-   	case 'D2'
-      	% TNAME = {	'Ca',	'ActiveAC',	'DA_D2R',	'Gbc',	'Gi_unbound_AC',	'DA',	'Ca',	'cAMP', 'Ct', 'ActiveCK'};
-		% YMAX  = {	'1', 0.4,		 0.04,	 	   6,	1.2,				5.0,	1.6,		4, 1.5, 	40};
-	    TNAME = {	'Ct',	'cAMP' };
-		YMAX  = {	1.5,	4 };
+	maxconc_noDAdip = maxmin_concs(targs{k}, sd_noDAdip, Toffset_VGCC, stop_time, max_or_min);
+	save(sprintf('%s/max_%s_noDAdip.mat', data_dir, targs{k}), 'maxconc_noDAdip');
 
+	maxconc_noCa = maxmin_concs(targs{k}, sd_noCa, Toffset_VGCC, stop_time, max_or_min);
+	save(sprintf('%s/max_%s_noCa.mat', data_dir, targs{k}), 'maxconc_noCa');
+
+	%%
+	%% Save time courses
+	%%
+	tid = find( strcmp( sd{1,1}.DataNames, targs{k} ) );
+	data ={};
+	for i = 1: numel(DA_delay);
+		[T, dat] = obtain_profile(targs{k}, sd{i}, Toffset_VGCC);
+		data{i,1} = [T,dat];
 	end
+	save(sprintf('%s/%s_TimeCourse.mat',data_dir, targs{k}), 'data');
+	
+	data_noDAdip = obtain_profile(targs{k}, sd_noDAdip, Toffset_VGCC);
+	save(sprintf('%s/%s_TimeCourse_noDAdip.mat',data_dir, targs{k}), 'data_noDAdip');
 
-
-	%%%
-	%%% Plot timing dependence
-	%%%
-
-    TNAME2 = {	'Ct',	'cAMP' };
-	YMAX2  = {	1.5,	4 };
-	for k = 1:numel(TNAME2);
-		concs = max_concs(TNAME2{k}, sd, numCa_Durations, numToffsets_DA, Tstart, Tend, Toffset);
-		save(sprintf('%s%s_%s_%g_%g_%s_Timing.mat',data_dir, TYPE, TNAME2{k}, SVR, DAbasal, STIM), 'concs');
-	end;
-
-	%%%
-	%%% Save data
-	%%%
-	for k = 1:numel(TNAME);
-		tid = find( strcmp( sd{1,1}.DataNames, TNAME{k} ) );
-		data ={};
-		for j = 1: numCa_Durations;
-			for i = 1: numel(Toffsets_DA);
-				T = sd{i,j}.Time - Toffset;
-				dat = sd{i,j}.Data(:,tid);
-				data{i,j} = [T,dat];
-			end
-		end
-		save(sprintf('%s%s_%s_%g_%g_%s_TimingTimeCourse.mat',data_dir,TNAME{k}, TYPE, SVR, DAbasal, STIM), 'data');
-	end
-	DA_delay = Toffsets_DA;
-	save(sprintf('%sDA_delay_%s_%g_%g_%s_TimingTimeCourse.mat',data_dir, TYPE, SVR, DAbasal, STIM), 'DA_delay');
-	Ca_dur   = Ca_Durations;
-	save(sprintf('%sDA_dur_%s_%g_%g_%s_TimingTimeCourse.mat',data_dir, TYPE, SVR, DAbasal, STIM), 'Ca_dur');
-
-
-	%%%
-	%%% Obtain max conc for save
-	%%%
-
-function max_val = max_concs(tname, sd, numCa_Durations, numToffsets_DA, Tstart, Tend, Toffset)
-		max_val = zeros( numToffsets_DA, numCa_Durations );
-		tid = find( strcmp( sd{1,1}.DataNames, tname ) );
-		for j = 1: numCa_Durations;
-			for i = 1: numToffsets_DA;
-				time = sd{i,j}.Time - Toffset;
-				data = sd{i,j}.Data(:,tid);
-				id = find((time >= Tstart)&(time <= Tend));
-				max_val(i,j) = max(data(id)) ;
-			end
-		end
+	data_noCa    = obtain_profile(targs{k}, sd_noCa, Toffset_VGCC);
+	save(sprintf('%s/%s_TimeCourse_noCa.mat',data_dir, targs{k}), 'data_noCa');
+	
 end
+
+save(sprintf('%s/DA_delay.mat',data_dir), 'DA_delay');
 
 
 

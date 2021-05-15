@@ -8,13 +8,17 @@ addpath('./funcs');
 addpath('./funcs2');
 init_font;
 
-flag_optoDA      = 0;
+flag_optoDA      = 1;
 flag_competitive = 0;
 flag_duration    = 0.5;
-[model, species, params, T_VGCC, T_DA] = msn_setup_TimeWindow(flag_competitive, flag_duration, flag_optoDA);
+[model, species, params, container] = msn_setup_TimeWindow(flag_competitive, flag_duration, flag_optoDA);
+T_VGCC = container('Toffset_VGCC');
+T_DA   = container('Toffset_DA');
+d_DA   = container('duration_DA');
 
 Toffset = T_VGCC.Value;
 T_DA.Value = T_VGCC.Value + 0.5;
+
 
 trange   = [-1,3];
 trange2  = [-1,40];
