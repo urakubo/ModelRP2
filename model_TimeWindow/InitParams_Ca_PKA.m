@@ -54,16 +54,16 @@ function init_params = InitParams_Ca_PKA();
 %%
 %% cAMP generation
 %%
-		'kcat_decomp'		, 0.33			;
-		'Km_decomp'			, 0.05			;
-		'kcat_synth'		, 100			;
-		'Km_synth'			, 1				;
+%		'kcat_decomp'		, 0.33			;
+%		'Km_decomp'			, 0.05			;
+%		'kcat_synth'		, 100			;
+%		'Km_synth'			, 1				;
 %%
 %% AC-CaM binding
 %%
 
 		'Km_AC'				, 0.1		;% 
-		'kcat_AC'			, 100		;% 
+		'kcat_AC'			, 150		;%%%% 100 21/5/15
 %
 		'kon_AC_CaM'		, 50	; %% temp = *5
 		'koff_AC_CaM'		, 20	; %% temp = *5
