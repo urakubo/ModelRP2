@@ -22,32 +22,13 @@ function init_species = InitSpecies_Ca_PKA(InitAC);
 %%%
 	spec   = {
 %
-		'ATP'			, 2000			;
-		'cAMP'			, 0				;
-		'AMP'			, 0				;
-		'PDE'			, InitPDE		;
-%
-%		'actAC'			, 0.05			;
-%		'BasalAC'		, InitBasalAC	;
-%		'ActAC5'		, 0				;
-%		'AC5sub0'		, InitAC5		;
-%		'AC5sub1'			, InitAC5	;
-%		'Golf_bound_AC5'	, 0			;
-%		'AC5sub1_Golf_GDP'	, 0			;
-%		'AC5sub1_Golf_GTP'	, 0			;
-%		'AC5sub2'			, InitAC5	;
-%		'Gi_unbound_AC5'	, 0			;
-%		'AC5sub2_Gi_GDP'	, 0			;
-%		'AC5sub2_Gi_GTP'	, 0			;
-%
-%		'ActAC1'			, 0			;
-%		'ACsub0'			, InitAC1	;
-%
-%		'ACsub1'			, InitAC1	;
-%		'Golf_bound_AC'		, 0			;
-%		'ACsub1_Golf_GDP'	, 0			;
-%		'ACsub1_Golf_GTP'	, 0			;
-%
+		'ATP'				, 2000			;
+		'cAMP'				, 0				;
+		'AMP'				, 0				;
+		'PDE'				, InitPDE		;
+
+		'BasalAC'			, 0			;%	;
+
 		'ActiveAC'			, 0			;
 %
 		'Ca_ext'			, 1			;

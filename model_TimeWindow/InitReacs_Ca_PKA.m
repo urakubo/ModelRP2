@@ -19,16 +19,6 @@ function InitReacs_Ca_PKA(model, species, params); %
 	eid = Reac12('R2C2cAMP4',   'Ct', 'R2C1cAMP4'  			, '_2koff_C'	, 'kon_C', model);
 	eid = Reac12('R2C1cAMP4', 	'Ct', 'R2C0cAMP4' 			, 'koff_C'	, '_2kon_C', model);
 
-	%% DARPP32-PP1 interaction
-%	eid = ReacEnz('D34p', 		'PP2B',	'D' 				, 'Km_T34DP',		'kcat_T34DP', model);
-%	eid = ReacEnz('D' 	, 		'Ct',	'D34p' 				, 'Km_T34P' ,		'kcat_T34P' , model);
-%	eid = ReacEnz('D34p_PP1', 	'PP2B',	'D_PP1' 			, 'Km_T34DP',		'kcat_T34DP', model);
-%	eid = ReacEnz('D_PP1' ,		'Ct',	'D34p_PP1' 			, 'Km_T34P' , 		'kcat_T34P' , model);
-%	eid = Reac21('D34p', 		'PP1',	'D34p_PP1' 			, 'kon_D32p_PP1',	'koff_D32p_PP1', model);
-%	eid = Reac12('D_PP1',		'D',	'PP1'	  			, 'koff_D32_PP1',	'Zero', model);
-
-%	r = addrule(model,'D34p_tot  = D34p_PP1 + D34p', 'repeatedAssignment');
-
 
 	%% Ca-CB binding
 	eid = Reac21( 'CB'  ,'Ca', 'Ca_CB' 						, 'kon_CB'	, 'koff_CB', model);
@@ -46,19 +36,22 @@ function InitReacs_Ca_PKA(model, species, params); %
 	set(species{'Ca_ext','Obj'}, 'ConstantAmount', true);
 	set(species{'VGCC_dummy','Obj'}, 'ConstantAmount', true);
 
+
 	%%
 	%% AC1-CaCaM interaction
 	%%
 	CaM_AC_Reacs(model, species, params)
 	tmp = 'AC_CaM = AC3_N0C0 + AC3_N0C1 + AC3_N0C2 + AC3_N1C0 + AC3_N1C1 + AC3_N1C2 + AC3_N2C0 + AC3_N2C1 + AC3_N2C2';
-%	tmp = 'AC_CaM = AC1_N0C0 + AC1_N0C1 + AC1_N0C2 + AC1_N1C0 + AC1_N1C1 + AC1_N1C2 + AC1_N2C0 + AC1_N2C1 + AC1_N2C2';
+	tmp = 'AC_CaM = (AC3_N0C0 + AC3_N0C1 + AC3_N0C2 + AC3_N1C0 + AC3_N1C1 + AC3_N1C2 + AC3_N2C0 + AC3_N2C1 + AC3_N2C2)/ACsub_CaM';
 	r = addrule(model, tmp,'repeatedAssignment');
+
 
 	%%
 	%% Active AC1 interaction
 	%%
+	% r = addrule(model,'ActiveAC = ACact * AC_CaM + BasalAC','repeatedAssignment');
+	% r = addrule(model,'ActiveAC = 0.99 * ACact * AC_CaM + 0.01 * ACact','repeatedAssignment');
 	r = addrule(model,'ActiveAC = ACact * AC_CaM','repeatedAssignment');
-
 
 
 %%%

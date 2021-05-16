@@ -50,6 +50,15 @@ for i = 1:numel(targs_plot);
 end
 yticks(a{1},[0 0.5]);
 
+mult_targs       = {'D2R','RGS'};
+mults            = {[1,1], [0.5,0.5], [2.0, 0.5], [0.5, 2.0]};
+mults = mults{3}
+for i = 1: numel(mult_targs)
+	reserv_targs{i} = species{mult_targs{i},'Obj'}.InitialAmount;
+	species{mult_targs{i},'Obj'}.InitialAmount = reserv_targs{i} * mults(i);
+end
+
+
 sd = sbiosimulate(model);
 j = 1;
 for i = 1:numel(targs_plot);

@@ -23,7 +23,7 @@ function [model, species, params, container] = msn_setup_TimeWindow(flag_competi
 	%%
 	species        = InitSpecies();
 	InitAC = species{'AC1','Conc'};
-	species_Ca_PKA = InitSpecies_Ca_PKA(1);
+	species_Ca_PKA = InitSpecies_Ca_PKA(InitAC);
 	init_species   = [species; species_Ca_PKA];
 
 	params         = InitParams();
