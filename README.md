@@ -8,7 +8,7 @@ In behavioral learning, reward-related events are encoded into phasic dopamine (
 
 ## System requirements
 
-Matlab plus the toolbox SimBiology. We confirmed safe executions of uploaded programs on Matlab 2020a in Microsoft Windows10.
+Matlab plus the toolbox SimBiology. Parallel computing toolbox is recommended. We confirmed safe executions of uploaded programs on Matlab 2020a in Microsoft Windows10.
 
 ## Installation
 
@@ -16,16 +16,22 @@ Matlab plus the toolbox SimBiology. We confirmed safe executions of uploaded pro
 
 	- git clone https://github.com/urakubo/ModelRP2.git
 
-2. Execute main_1D_plot.m, etc., and you will see the following figures.
+2. Execute main_1D_plot.m, etc., and you will see the following figures. Please run the simulation itself before drawing figures, i.e., please execute "main_2D_sim.m" before executing "main_2D_plot.m."
 
 | Program | Figure |
 | ------------- | ------------- |
-| main_0D_plot.m | Fig 1C, S1 Fig |
-| main_1D_plot_scheme.m | Fig 2A |
-| main_1D_plot.m | Fig 2B |
-| main_2D_plot.m | Fig 2C, S2 Fig |
-| main_2D_plot_theory.m | Fig 3 |
-| main_3D_plot.m |S3 Fig |
+| main_demo1.m | Fig 1A, 1B, 1D |
+| main_demo2.m | Fig 1F |
+| main_demo3.m | Figs 3A, 4A, S4A |
+| main_0D_plot.m | S3 Fig |
+| main_1D_plot.m | Figs 3B, 4B, S4B-S4D |
+| main_2D_plot.m | Figs 2C, 2D, 3C, 3D, S7 |
+| main_2D_plot_theory.m | Fig 5 |
+| main_2D_plot_conc_DA.m | S5 Fig |
+| main_2D_plot_tau_Golf.m | S6 Fig |
+| main_tw_plot.m | Figs 1, 7A-7D  |
+| main_tw_plot_summary | Fig 7E |
+| main_tw_AC5_DA_Golf_plot.m | S9 Fig |
 
 ## License
 
