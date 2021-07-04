@@ -1,7 +1,8 @@
 %%
 %% MSN setup
 %%
-function [model, species, params, container] = msn_setup(flag_competitive, flag_Gi_sequestrated_AC, flag_optoDA, flag_duration, varargin)
+function [model, species, params, container] = ...
+		msn_setup(flag_competitive, flag_Gi_sequestrated_AC, flag_optoDA, flag_duration, varargin)
 
 %	fprintf('nargin: %g\n',nargin);
 %	fprintf('varargin{1}: %g\n',varargin{1});

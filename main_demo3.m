@@ -11,10 +11,11 @@
 
 	init_font;
 
-	flag_competitive 		= 0;
-	flag_Gi_sequestrated_AC = 1;
-	flag_optoDA 			= 0;
-	flag_duration 			= -1;
+	flag_competitive 		= 0 ; % 0: non-competitive ;  1: competitive
+	flag_Gi_sequestrated_AC = 1 ; % 0: non-sequestrated;  1: sequestrated
+	flag_optoDA 			= 0 ; % 0: Constant        ;  1: Opto
+	flag_duration 			= -1; % -1: Persistent drop; 0: No pause; >0: pause duration;
+
 	stop_time  = 6;
 	Toffset    = 3;
 	[model, species, params, container] = ...
@@ -24,30 +25,27 @@
 
 
 %%%
-	fig     = figure;
 	trange  = [-1.5,1.5];
+
+	fig     = figure;
 	yrange1 = [-0.2, 0.6];
 	a1 = plot_prep(fig, trange, yrange1, 'Time (s)', '(uM)', 1);
 
 	tname = 'DA';
 	[T, DATA] = obtain_profile(tname, sd, Toffset);
-
 	plot(a1, trange, [0 0], 'k:');
 	plot(a1, T, DATA, 'k-', 'LineWidth',2);
-	yticks([0 0.5])
+	yticks([0, 0.05, 0.5]);
 
 
 	yrange = [0,110];
-	a2 = plot_prep(fig, trange, yrange, 'Time (s)', '(%total)', 5);
+	a2 = plot_prep(fig, trange, yrange, 'Time (s)', '(%Total)', 5);
 
-	tname = 'ACact';
+	tname = 'ACprimed';
 	[T, DATA] = obtain_profile(tname, sd, Toffset);
 	t_half    = obtain_half(tname, sd, Toffset);
-	% AC1tot = obtain_conc('AC1', sd, 0);
-	% DATA = DATA./AC1tot;
+	data_half = interp1(T, DATA, t_half);
 
-	data_stable = interp1(T, DATA, Toffset);
-	data_half   = interp1(T, DATA, t_half); % vq = interp1(x,v,xq)
 	plot(a2, [0 0], yrange, 'k:');
 	plot(a2, [1 1]*t_half, yrange, 'k:');
 	plot(a2, trange, [1 1]*100, 'k:');

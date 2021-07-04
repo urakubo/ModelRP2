@@ -1,7 +1,7 @@
 %%
 %% MSN setup
 %%
-function [model, species, params, container] = msn_one_opto(DAvarargin)
+function [model, species, params, container] = msn_one_opto(varargin)
 
 	if nargin == 1
 	    stop_time = varargin;

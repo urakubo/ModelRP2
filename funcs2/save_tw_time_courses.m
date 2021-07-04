@@ -10,7 +10,8 @@ function save_tw_time_courses(sd, sd_noDAdip, sd_noCa, targs, data_dir, containe
 	for k = 1:numel(targs);
 		time_courses ={};
 		for i = 1: numel(sd);
-			time_courses{i,1} = obtain_profile(targs{k}, sd{i}, Toffset_VGCC);
+			[T, DATA] = obtain_profile(targs{k}, sd{i}, Toffset_VGCC);
+			time_courses{i} = [T, DATA];
 		end
 		save(sprintf('%s/time_courses_%s.mat',data_dir, targs{k}), 'time_courses');
 		

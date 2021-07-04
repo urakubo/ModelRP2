@@ -1,6 +1,17 @@
 
 
-function [ AC_basal_theory, AC_dip_theory, t_half_theory ] = theory(flag_competitive, mD2R, mAC, mRGS, mGi, mGolf, params)
+function [ AC_basal_theory, AC_dip_theory, t_half_theory ] = theory(flag_competitive, mD2R, mAC, mRGS, mGi, mGolf, params, varargin)
+
+	if nargin == 7
+	    DAbasal = 0.5;
+		DAdip   = 0.05;
+	elseif nargin == 9
+	    DAbasal =  varargin{1};
+	    DAdip   = varargin{2};
+	else
+	    fprintf('Mismach of the number of argument in Theory\n')
+	    return;
+	end
 
 	Km_hyd_Gi     = params{'Km_hyd_Gi','Obj'}.Value;
 	kcat_hyd_Gi   = params{'kcat_hyd_Gi','Obj'}.Value;
@@ -17,14 +28,12 @@ function [ AC_basal_theory, AC_dip_theory, t_half_theory ] = theory(flag_competi
 	kb_DA_D2R = params{'kb_DA_D2R','Obj'}.Value;
 	Kd_DA     = kb_DA_D2R / kf_DA_D2R;
 
-	kon_AC_GolfGTP  = params{'kon_AC_GolfGTP','Obj'}.Value;
-	koff_AC_GolfGTP = params{'koff_AC_GolfGTP','Obj'}.Value;
-	Kd_AC_Golf       = koff_AC_GolfGTP / kon_AC_GolfGTP;
+	kon_AC_Golf  = params{'kon_AC_Golf','Obj'}.Value;
+	koff_AC_Golf = params{'koff_AC_Golf','Obj'}.Value;
+	Kd_AC_Golf       = koff_AC_Golf / kon_AC_Golf;
 
-	DAo         = 0.5;
-	DAdip       = 0.05;
-	k_DAo       = kcat_exch_Gi .* DAo ./ (DAo + Kd_DA);
-	k_DAdip     = kcat_exch_Gi .* DAdip ./ (DAdip + Kd_DA);
+	k_DAbasal   = kcat_exch_Gi .* DAbasal ./ (DAbasal + Kd_DA);
+	k_DAdip     = kcat_exch_Gi .* DAdip   ./ (DAdip   + Kd_DA);
 
 	%%
 	D2Rtot  = mD2R;
@@ -33,30 +42,30 @@ function [ AC_basal_theory, AC_dip_theory, t_half_theory ] = theory(flag_competi
 	Golftot = mGolf;
 	%%
 	kRGS = RGStot .* kcat_hyd_Gi ./ Km_hyd_Gi;
-	vD2Ro   = k_DAo   .* D2Rtot;
-	vD2Rdip = k_DAdip .* D2Rtot;
-	GTPo   = vD2Ro   ./ kRGS;
-	GTPdip = vD2Rdip ./ kRGS;
+	vD2Rbasal = k_DAbasal .* D2Rtot;
+	vD2Rdip   = k_DAdip   .* D2Rtot;
+	GTPbasal  = vD2Rbasal ./ kRGS;
+	GTPdip    = vD2Rdip   ./ kRGS;
 	%%
 	tau = (1./kRGS + 1./koff_AC_GiGDP);
 	Golf = Golftot ./ Kd_AC_Golf;
 
 	if (flag_competitive == 0)
 		%%
-		%% Uncompetitive binding
+		%% Non-competitive binding
 		%%
-		AC_Golf_max = Golf ./ (1 + Golf);
+		% AC_Golf_max = Golf ./ (1 + Golf);
 		alpha = (koff_AC_GiGTP + kRGS)./kon_AC_GiGTP./ACtot;
 		c   = -alpha;
 
-		b   = ( tau .* vD2Ro ./ ACtot - 1 + alpha  );
+		b   = ( tau .* vD2Rbasal ./ ACtot - 1 + alpha  );
 		AC_basal_theory  = 0.5.*( -b + sqrt( b .* b - 4 .* c ) );
 
 		b   = ( tau .* vD2Rdip ./ ACtot - 1 + alpha  );
 		AC_dip_theory  = 0.5.*( -b + sqrt( b .* b - 4 .* c ) ); 
 
 		%% T1/2
-		b      = (Kd_AC_GiGTP./ACtot) + (GTPo./ACtot) - 1;
+		b      = (Kd_AC_GiGTP./ACtot) + (GTPbasal./ACtot) - 1;
 		c      = -Kd_AC_GiGTP./ACtot;
 		Abasal = 0.5.*( -b + sqrt( b .* b - 4 .* c ) );
 
@@ -66,7 +75,7 @@ function [ AC_basal_theory, AC_dip_theory, t_half_theory ] = theory(flag_competi
 
 		A_ave = (Abasal + Adip) ./ 2;
 		denominator   = (1-A_ave)  .* ( ACtot + Kd_AC_GiGTP./A_ave ) - GTPdip ;
-		numerator     = GTPo - GTPdip;
+		numerator     = GTPbasal - GTPdip;
 		t_half_theory = 1./ kRGS .* log( numerator./denominator );
 
 	else
@@ -77,7 +86,7 @@ function [ AC_basal_theory, AC_dip_theory, t_half_theory ] = theory(flag_competi
 		alpha = (koff_AC_GiGTP + kRGS) ./ kon_AC_GiGTP ./ ACtot .* (1+Golf);
 
 		%% A_basal
-		b = vD2Ro .* tau ./ ACtot -1 + alpha;
+		b = vD2Rbasal .* tau ./ ACtot -1 + alpha;
 		c = -alpha;
 		AC_basal_theory  = 0.5.*( -b + sqrt( b .* b - 4 .* c ) ) ;
 		
@@ -87,7 +96,7 @@ function [ AC_basal_theory, AC_dip_theory, t_half_theory ] = theory(flag_competi
 		AC_dip_theory  = 0.5.*( -b + sqrt( b .* b - 4 .* c ) );
 
 		%% T1/2
-		b      = (Kd_AC_GiGTP./ACtot) .* (1+Golf) + (GTPo./ACtot) - 1;
+		b      = (Kd_AC_GiGTP./ACtot) .* (1+Golf) + (GTPbasal./ACtot) - 1;
 		c      = -Kd_AC_GiGTP./ACtot .* (1+Golf);
 		Abasal = 0.5.*( -b + sqrt( b .* b - 4 .* c ) );
 
@@ -99,7 +108,7 @@ function [ AC_basal_theory, AC_dip_theory, t_half_theory ] = theory(flag_competi
 		% A = (A_basal_theory + A_dip_theory) ./ 2;
 
 		denominator   = (1 - A)  .* ( ACtot + Kd_AC_GiGTP.*(1+Golf)./A ) - GTPdip ;
-		numerator     = GTPo - GTPdip;
+		numerator     = GTPbasal - GTPdip;
 
 		t_half_theory = 1./ kRGS .* log( numerator./denominator );
 	end

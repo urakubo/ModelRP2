@@ -10,15 +10,17 @@ function init_species = InitSpecies();
 	m = 3/5; % 3/5
 	InitGi		 = m * 15 	;
 	InitD2R		 = m * InitGi ./30	; 
+
 	InitGbc		 = m * 10; 
+	
+	
 	InitAC		 = m * InitGi ./30 /2  ;
 	InitRGS		 = m * (InitGbc+InitGi) / 2 /5;
 
-	InitGolf	 = 0.08;
+	InitGolf	 = 0.8;
+%	InitGolf	 = 1.0;
 
-%	InitGolf	 = 0.09;
-%	InitGolf	 = 0.5;
-%	InitGolf	 = 0.10;
+
 %%
 %	InitGolf	 = 0.5;
 %	InitRGS		 = InitRGS ./ 3;
@@ -28,6 +30,7 @@ function init_species = InitSpecies();
 	fprintf('InitD2R conc: %g uM \n', InitD2R	);
 	fprintf('InitAC  conc: %g uM \n', InitAC	);
 	fprintf('InitRGS conc: %g uM \n', InitRGS	);
+	fprintf('Initbc  conc: %g uM \n', InitGbc	);
 
 
 	spec   = {
@@ -49,9 +52,9 @@ function init_species = InitSpecies();
 		'AC1_Gi_GDP'	, 0				;
 		'AC1_Gi_GTP'	, 0				;
 %
+		'Golf_tot'		, InitGolf 		;
 		'Golf'			, InitGolf 		;
 		'Golf_AC1'		, 0				;
-%		'ActiveAC'		, 0				;
 		'RGS'			, InitRGS		;
 %
 		'AC2'			, 1				;
@@ -60,7 +63,7 @@ function init_species = InitSpecies();
 		'Golf_bound'	, 0				;
 		'Gitot'			, InitGi		;
 		'ACtot'			, InitAC		;
-		'ACact'			, 0				;
+		'ACprimed'		, 0				;
 %
 		};
 %

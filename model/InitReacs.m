@@ -39,20 +39,22 @@ function InitReacs(model, species, params, flag_competitive, flag_Gi_sequestrate
 	end
 
 	%% Golf binding to AC
-	set(species{'Golf','Obj'}, 'ConstantAmount', true);
-	set(species{'Golf','Obj'}, 'BoundaryCondition', true);
-	r = addrule(model,'Golf_bound  = Golf ./ ((koff_AC_GolfGTP / kon_AC_GolfGTP) + Golf)', 'repeatedAssignment');
+	set(species{'Golf_tot','Obj'}, 'ConstantAmount', false); %%%
+	set(species{'Golf_tot','Obj'}, 'BoundaryCondition', true);
+	r = addrule(model,'Golf_bound  = Golf ./ ((koff_AC_Golf / kon_AC_Golf) + Golf)', 'repeatedAssignment');
 
 	if (flag_competitive == 0)
-		ReacChannel('AC2','Golf', 'Golf_AC2', 'kon_AC_GolfGTP' , model);
-		ReacOneWay( 'Golf_AC2'	, 'AC2'		, 'koff_AC_GolfGTP', model);
+		ReacChannel('AC2','Golf', 'Golf_AC2', 'kon_AC_Golf' , model);
+		ReacOneWay( 'Golf_AC2'	, 'AC2'		, 'koff_AC_Golf', model);
 		r = addrule(model,'AC1tot = AC1 + AC1_Gi_GTP + AC1_Gi_GDP ', 'repeatedAssignment');
-		r = addrule(model,'ACact  = Golf_AC2 * AC1 / AC1tot / Golf_bound', 'repeatedAssignment');
+		r = addrule(model,'ACprimed  = Golf_AC2 * AC1 / AC1tot / Golf_bound', 'repeatedAssignment');
+		% r = addrule(model,'ACact  = AC1 / AC1tot', 'repeatedAssignment');
 	else
-		ReacChannel('AC1','Golf', 'Golf_AC1', 'kon_AC_GolfGTP' , model);
-		ReacOneWay( 'Golf_AC1'	, 'AC1'		, 'koff_AC_GolfGTP', model);	
-		r = addrule(model,'ACtot    = Golf_AC1 + AC1 + AC1_Gi_GTP + AC1_Gi_GDP', 'repeatedAssignment');
-		r = addrule(model,'ACact    = Golf_AC1 / ACtot / Golf_bound', 'repeatedAssignment');
+		ReacChannel('AC1','Golf', 'Golf_AC1', 'kon_AC_Golf' , model);
+		ReacOneWay( 'Golf_AC1'	, 'AC1'		, 'koff_AC_Golf', model);	
+		r = addrule(model,'ACtot      = Golf_AC1 + AC1 + AC1_Gi_GTP + AC1_Gi_GDP', 'repeatedAssignment');
+		% r = addrule(model,'ACact    = Golf_AC1 / ACtot / Golf_bound', 'repeatedAssignment');
+		r = addrule(model,'ACprimed   = Golf_AC1 / ACtot / Golf_bound', 'repeatedAssignment');
 	end
 
 

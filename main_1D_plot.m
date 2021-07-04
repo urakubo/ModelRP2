@@ -8,13 +8,10 @@
 	addpath('./funcs2');
 	init_font;
 
-
-	flag_competitive 		= 1;
-	flag_Gi_sequestrated_AC = 1;
-	flag_optoDA 			= 0;
-	flag_duration 			= -1;
-	[model, species, params, container] = msn_setup(flag_competitive, flag_Gi_sequestrated_AC, flag_optoDA, flag_duration);
-	Toffset = container('Toffset_DA').Value;
+	flag_competitive 		= 0 ; % 0: non-competitive ;  1: competitive
+	flag_Gi_sequestrated_AC = 1 ; % 0: non-sequestrated;  1: sequestrated
+	flag_optoDA 			= 0 ; % 0: Constant        ;  1: Opto
+	flag_duration 			= -1; % -1: Persistent drop; 0: No pause; >0: pause duration;
 
 	concs1 = 10.^[-1:0.1:1];
 	concs2 = 10.^[-2:0.1:2];
@@ -23,11 +20,8 @@
 
 	width = 1;
 
-%{
-	targs = {'Gi_Gbc'};
-	mult_concs = 10.^[-2:0.1:2];
-	width = 1.15;
-%}
+	[model, species, params, container] = msn_setup(flag_competitive, flag_Gi_sequestrated_AC, flag_optoDA, flag_duration);
+	Toffset = container('Toffset_DA').Value;
 
 	fig = figure('Name',sprintf('Competitive %g',flag_competitive));
 	fig.Position = fig.Position.*[1, 0.5, 1.5, 1.3];
@@ -44,56 +38,67 @@
 
 		%% Theory
 		[D2Rtot, RGStot, ACtot, Gi_Gbctot, Golftot] = obtain_init_concs_1D( species, targ, concs );
-		
 		[ AC_basal_th, AC_dip_th, AC_t_th ] = theory(flag_competitive, D2Rtot, ACtot, RGStot, Gi_Gbctot, Golftot, params);
 
 		%% Plot
 		xrange = [min(concs), max(concs)];
 
+
+		% ACbasal
 		yrange = [0,120];
 		col    = [0,0,1];
 		whi    = [1,1,1];
 
-		a1 = prep_plot_(fig, xrange, yrange, targ, 'AC_act basal (%Total)', i, width);
+		a1 = prep_plot_(fig, xrange, yrange, targ, 'ACbasal (%Total)', i, width);
 		plot_paint(a1, concs,  (AC_basal_sim < 0.30),  yrange, col*0.2+whi*0.8)
 		plot(a1,   concs, AC_basal_sim*100, 'k-', 'LineWidth',2);
 		plot(a1,   concs, AC_basal_th*100, ':', 'LineWidth',2, 'Color', col);
 		plot_decoration(a1, xrange, yrange);
 
+		% ACdip
 		col = [0, 0.5, 1];
-		a3 = prep_plot_(fig, xrange, yrange, targ, 'AC_act_dip (%Total)', i+5, width);
-		plot_paint(a3, concs,  (AC_dip_sim > 0.70),  yrange, col*0.2+whi*0.8)
-		plot(a3,   concs, AC_dip_sim*100, 'k-', 'LineWidth',2);
-		plot(a3,   concs, AC_dip_th*100, ':', 'LineWidth',2, 'Color', col);
-		plot_decoration(a3, xrange, yrange)
+		a2 = prep_plot_(fig, xrange, yrange, targ, 'ACdip (%Total)', i+5, width);
+		plot_paint(a2, concs,  (AC_dip_sim > 0.70),  yrange, col*0.2+whi*0.8)
+		plot(a2,   concs, AC_dip_sim*100, 'k-', 'LineWidth',2);
+		plot(a2,   concs, AC_dip_th*100 , ':' , 'LineWidth',2, 'Color', col);
+		plot_decoration(a2, xrange, yrange)
 
-		if strcmp(targ, 'Golf')
-			kon_AC_GolfGTP  = params{'kon_AC_GolfGTP','Obj'}.Value;
-			koff_AC_GolfGTP = params{'koff_AC_GolfGTP','Obj'}.Value;
-			Kd_AC_Golf      = koff_AC_GolfGTP / kon_AC_GolfGTP;
-			Golf 			= Golftot ./ Kd_AC_Golf;
-			max_AC_Golf 	= Golf ./ (1+Golf);
-			a5 = prep_plot_(fig, xrange, yrange, targ, 'max_AC_Golf (%Total)', i+10, width);
-			plot(a5,   concs, max_AC_Golf*100, 'k-', 'LineWidth',2);
-			plot(a5, [1 1], yrange, 'k:', 'LineWidth', 0.5);
-			id_Golf = find(Golftot == species{'Golf','Obj'}.InitialAmount); % 0.3750
-			title( a5, max_AC_Golf(id_Golf) )
-		end
+		% ACact_dip -  ACact_basal
+		yrange = [0, 60];
+		max_AC_Golf = obtain_max_AC_Golf( species, params, targ, concs );
+		a3 = prep_plot_(fig, xrange, yrange, targ, 'Act_dip -  Act_basal (%)', i+10, width);
+		plot(a3,   concs, max_AC_Golf.*(AC_dip_sim - AC_basal_sim)*100, 'k-', 'LineWidth',2);
+		plot_decoration(a3, xrange, yrange);
 
+		% T1_2
 		yrange = [0.01,10];
 		col = [1,0.8,0.8];
-		a2 = prep_plot_(fig, xrange, yrange,  targ, '(s)', i+15, width);
-		plot_paint(a2, concs,  (AC_t_sim < 0.5),  yrange, col)
-		plot(a2, concs, AC_t_sim, 'k-', 'LineWidth',2);
-		plot(a2, concs, AC_t_th , 'r:', 'LineWidth',2);
-		plot_decoration(a2, xrange, yrange);
-		prep_ylog(a2);
+		a4 = prep_plot_(fig, xrange, yrange,  targ, 'T1_2 (s)', i+15, width);
+		plot_paint(a4, concs,  (AC_t_sim < 0.5),  yrange, col)
+		plot(a4, concs, AC_t_sim, 'k-', 'LineWidth',2);
+		plot(a4, concs, AC_t_th , 'r:', 'LineWidth',2);
+		plot_decoration(a4, xrange, yrange);
+		prep_ylog(a4);
 
 	end
 
 
 %%%
 %%%
+function max_AC_Golf = obtain_max_AC_Golf( species, params, targ,  mult_concs )
+	Golftot = species{ 'Golf', 'Obj'}.InitialAmount;
+	if strcmp(targ, 'Golf')
+		Golftot = Golftot .* mult_concs;
+	end
+
+	kon_AC_GolfGTP  = params{'kon_AC_Golf','Obj'}.Value;
+	koff_AC_GolfGTP = params{'koff_AC_Golf','Obj'}.Value;
+	Kd_AC_Golf      = koff_AC_GolfGTP / kon_AC_GolfGTP;
+	Golf 			= Golftot ./ Kd_AC_Golf;
+	max_AC_Golf 	= Golf ./ (1+Golf);
+
+
+end
 
 function plot_paint(a, xx, paint_area,  yrange, color)
 
@@ -104,28 +109,6 @@ function plot_paint(a, xx, paint_area,  yrange, color)
 			'EdgeColor','none','FaceColor', color );
 		id.Clipping = 'on';
 	end
-end
-
-
-function ax = prep_plot_short(fig, xx, zz , xtitle, ytitle, i, width)
-	ii = i - 1;
-	row = floor(ii / 5);
-	col = mod(ii, 5);
-	ax = axes(fig, 'Position',[(0.1+col*0.18), (0.7-row*0.3),  0.1 * width,  0.18]); %%
-
-	ax.ActivePositionProperty = 'Position';
-	box off;
-	set(ax,'TickDir','out');
-	set(gca, 'XScale', 'log');
-	set(ax,'XTick',[0.01,0.1,1,10,100]);
-	xlim(xx);
-	ylim(zz);
-	set(gca, 'XTickLabel',  num2str( get(gca,'XTick')' ,'%-g'));
-	hold on;
-	xlabel( xtitle, 'Interpreter', 'none');
-	ylabel( ytitle, 'Interpreter', 'none');
-	ax.Clipping = 'on';
-	ax.ClippingStyle = 'rectangle';
 end
 
 

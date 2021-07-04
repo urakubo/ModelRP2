@@ -1,15 +1,14 @@
 
 
-function [ACact_basal_sim, ACact_dip_sim, t_half_sim] = sim_1D( targ, mult_concs, species, model, Toffset)
+function [ACprimed_basal, ACprimed_dip, t_half] = sim_1D( targ, mult_concs, species, model, Toffset)
 
+	targ_output = 'ACprimed';
 	num_concs  		= numel( mult_concs );
 	ACact_basal_sim = zeros( num_concs,1 );
 	ACact_dip_sim   = zeros( num_concs,1 );
 	t_half_sim 		= zeros( num_concs,1 );
 
-	reserv = species{ targ,'Obj'}.InitialAmount;
-
-	%
+	reserv  = species{ targ,'Obj'}.InitialAmount;
 	for j = 1:num_concs;
 	%
 		% Sim
@@ -17,14 +16,13 @@ function [ACact_basal_sim, ACact_dip_sim, t_half_sim] = sim_1D( targ, mult_concs
 		sd   = sbiosimulate(model);
 
 		% Get I and T
-		ACact    = obtain_conc('ACact', sd, Toffset);
+		ACprimed     = obtain_conc( targ_output, sd, Toffset);
+		ACprimed_end = sd.Data(end, find( strcmp( sd.DataNames, targ_output )) );
 
-		ACact_end = sd.Data(end, find( strcmp( sd.DataNames, 'ACact' )) );
+		t_half(j) =  obtain_half( targ_output, sd, Toffset);
 
-		t_half_sim(j) =  obtain_half('ACact', sd, Toffset);
-
-		ACact_basal_sim(j)     =  ACact;
-		ACact_dip_sim(j)   =  ACact_end;
+		ACprimed_basal(j) =  ACprimed;
+		ACprimed_dip(j)   =  ACprimed_end;
 	%
 	end
 	%

@@ -3,10 +3,10 @@
 %%
 function [model, species, params, container] = msn_setup_TimeWindow(flag_competitive, flag_duration, flag_optoDA)
 
-	stop_time               = 50;
+	stop_time               = 20;
 	Toffset_VGCC            = 10;
 	Toffset_DA              = 10.8;
-	flag_Gi_sequestrated_AC = 0;
+	flag_Gi_sequestrated_AC = 1;
 	
 
 	%%

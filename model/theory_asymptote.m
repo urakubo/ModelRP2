@@ -1,5 +1,5 @@
 
-function D2R = theory_asymptote(RGS, IorT, params, AC, mode)
+function D2R = theory_asymptote(RGS, params, ACtot, Golftot, mode, flag_competitive)
 
 	kb_DA_D2R   = params{'kb_DA_D2R','Obj'}.Value;
 	kf_DA_D2R   = params{'kf_DA_D2R','Obj'}.Value;
@@ -21,33 +21,49 @@ function D2R = theory_asymptote(RGS, IorT, params, AC, mode)
 
 	Kd_AC_GiGTP = koff_AC_GiGTP./kon_AC_GiGTP;
 	kRGS = RGS .* kcat_hyd_Gi ./ Km_hyd_Gi;
-	DAo         = 0.5;
+	DAbasal     = 0.5;
 	DAdip       = 0.05;
-	k_DAo       = kcat_exch_Gi .* DAo ./ (DAo + Kd_DA);
-	k_DAdip     = kcat_exch_Gi .* DAdip ./ (DAdip + Kd_DA);
-	% vD2Ro   = k_DAo   .* D2Rtot;
-	% vD2Rdip = k_DAdip .* D2Rtot;
+	kDA_basal   = kcat_exch_Gi .* DAbasal  ./ (DAbasal + Kd_DA);
+	kDA_dip     = kcat_exch_Gi .* DAdip    ./ (DAdip   + Kd_DA);
+
+	kon_AC_Golf  = params{'kon_AC_Golf','Obj'}.Value;
+	koff_AC_Golf = params{'koff_AC_Golf','Obj'}.Value;
+	Kd_AC_Golf       = koff_AC_Golf / kon_AC_Golf;
+	Golf = Golftot ./ Kd_AC_Golf;
+
 	% GTPo   = vD2Ro   ./ kRGS;
 	% GTPdip = vD2Rdip ./ kRGS;
 
 	
 	switch mode
 		case 'T1_2'
-			T1_2 = IorT;
-			k = k_DAo - k_DAdip;
-			D2R = ( AC + 2.*Kd_AC_GiGTP ) .* kRGS ./ 2 ./ ( k .* exp(-kRGS.*T1_2) + k_DAdip);
-		case 'Io_1'
-			I = IorT;
-			D2R = I./k_DAo .* koff_AC_GiGDP .* (AC +  kRGS ./ kon_AC_GiGTP ./(1-I) ) ;
-		case 'Io_2'
-			I = IorT;
-			D2R = I./k_DAo .* ( AC + Kd_AC_GiGTP ./ (1-I) ) .* kRGS;
-		case 'Idip_1'
-			I = IorT;
-			D2R = I./k_DAdip .* koff_AC_GiGDP .* (AC +  kRGS ./ kon_AC_GiGTP ./(1-I) ) ;
-		case 'Idip_2'
-			I = IorT;
-			D2R = I./k_DAdip .* ( AC + Kd_AC_GiGTP ./ (1-I) ) .* kRGS;
+			T1_2 = 0.5;
+			k = kDA_basal - kDA_dip;
+			if (flag_competitive == 0)
+				D2R = ( ACtot + 2.*Kd_AC_GiGTP ) .* kRGS ./ 2 ./ ( k .* exp(-kRGS.*T1_2) + kDA_dip);
+			else
+				D2R = ( ACtot + 2.*Kd_AC_GiGTP.*(1+Golf) ) .* kRGS ./ 2 ./ ( k .* exp(-kRGS.*T1_2) + kDA_dip);
+			end
+		case 'ACbasal'
+			ACbasal = 0.3;
+			if (flag_competitive == 0)
+				D2R_1 = (1-ACbasal)./kDA_basal .* (ACtot + Kd_AC_GiGTP ./ACbasal ) .* kRGS;
+				D2R_2 = (1-ACbasal)./kDA_basal .* koff_AC_GiGDP .* (ACtot + 1 ./ kon_AC_GiGTP ./ ACbasal .*  kRGS ) ;
+			else
+				D2R_1 = (1-ACbasal)./kDA_basal .* (ACtot + Kd_AC_GiGTP .* (1+Golf) ./ACbasal ) .* kRGS;
+				D2R_2 = (1-ACbasal)./kDA_basal .* koff_AC_GiGDP .* (ACtot + (1+Golf) ./ kon_AC_GiGTP ./ ACbasal .*  kRGS ) ;
+			end
+			D2R = [D2R_1;D2R_2];
+		case 'ACdip'
+			ACdip = 0.7;
+			if (flag_competitive == 0)
+				D2R_1 = (1-ACdip)./kDA_dip .* (ACtot + Kd_AC_GiGTP ./ACdip ) .* kRGS;
+				D2R_2 = (1-ACdip)./kDA_dip .* koff_AC_GiGDP .* (ACtot + 1 ./ kon_AC_GiGTP ./ ACdip .*  kRGS ) ;
+			else
+				D2R_1 = (1-ACdip)./kDA_dip .* (ACtot + Kd_AC_GiGTP .* (1+Golf) ./ACdip ) .* kRGS;
+				D2R_2 = (1-ACdip)./kDA_dip .* koff_AC_GiGDP .* (ACtot + (1+Golf) ./ kon_AC_GiGTP ./ ACdip .*  kRGS ) ;
+			end
+			D2R = [D2R_1;D2R_2];
 	end
 
 end

@@ -41,17 +41,14 @@ function InitReacs_Ca_PKA(model, species, params); %
 	%% AC1-CaCaM interaction
 	%%
 	CaM_AC_Reacs(model, species, params)
-	tmp = 'AC_CaM = AC3_N0C0 + AC3_N0C1 + AC3_N0C2 + AC3_N1C0 + AC3_N1C1 + AC3_N1C2 + AC3_N2C0 + AC3_N2C1 + AC3_N2C2';
-	tmp = 'AC_CaM = (AC3_N0C0 + AC3_N0C1 + AC3_N0C2 + AC3_N1C0 + AC3_N1C1 + AC3_N1C2 + AC3_N2C0 + AC3_N2C1 + AC3_N2C2)/ACsub_CaM';
+	tmp = 'AC_CaM = (AC3_N0C0 + AC3_N0C1 + AC3_N0C2 + AC3_N1C0 + AC3_N1C1 + AC3_N1C2 + AC3_N2C0 + AC3_N2C1 + AC3_N2C2)';
 	r = addrule(model, tmp,'repeatedAssignment');
 
 
 	%%
-	%% Active AC1 interaction
+	%% Considering non-competitive binding only
 	%%
-	% r = addrule(model,'ActiveAC = ACact * AC_CaM + BasalAC','repeatedAssignment');
-	% r = addrule(model,'ActiveAC = 0.99 * ACact * AC_CaM + 0.01 * ACact','repeatedAssignment');
-	r = addrule(model,'ActiveAC = ACact * AC_CaM','repeatedAssignment');
+	r = addrule(model,'ActiveAC = Golf_AC2 * (AC1 / AC1tot) * (AC_CaM / ACsub_CaM)','repeatedAssignment');
 
 
 %%%
