@@ -16,25 +16,25 @@ Matlab plus the toolbox SimBiology. Parallel computing toolbox is recommended. W
 
 	- git clone https://github.com/urakubo/ModelRP2.git
 
-2. Please run the simulation before drawing figures, i.e., please execute "main_2D_sim.m" before executing "main_2D_plot.m."
+2. Please run the simulation before drawing figures, i.e., execute "main_2D_sim.m" before executing "main_2D_plot.m."
 
 3. Execute main_1D_plot.m, etc., and you will see the following figures.
 
 
-| Program | Figure |
-| ------------- | ------------- |
-| main_demo1.m | Fig 2A, 2B, 2D, 2E |
-| main_demo2.m | Fig 2F |
-| main_demo3.m | Figs 3A, 4A, S4A |
-| main_demo4.m | S3 Fig |
-| main_1D_plot.m | Figs 3B, 4B, S4B-S4D |
-| main_2D_plot.m | Figs 2C, 2D, 3C, 3D, S7 |
-| main_2D_plot_theory.m | Fig 5 |
-| main_2D_plot_conc_DA.m | S5 Fig |
-| main_2D_plot_tau_Golf.m | S6 Fig |
-| main_tw_plot.m | Figs 1, 7A-7D  |
-| main_tw_plot_summary | Fig 7E |
-| main_tw_AC5_DA_Golf_plot.m | S9 Fig |
+| Graph | Simulation | Figure |
+| ------------- | ------------- | ------------- |
+| main_demo1.m | None | Fig 2A, 2B, 2D, 2E |
+| main_demo2.m | None | Fig 2F |
+| main_demo3.m | None | Figs 3A, 4A, S4A |
+| main_demo4.m | None | S3 Fig |
+| main_1D_plot.m | None | Figs 3B, 4B, S4B-S4D |
+| main_2D_plot.m | main_2D_sim.m | Figs 2C, 2D, 3C, 3D, S7 |
+| main_2D_plot_theory.m | None | Fig 5 |
+| main_2D_plot_conc_DA.m | main_2D_sim_conc_DA.m | S5 Fig |
+| main_2D_plot_tau_Golf.m | main_2D_sim_tau_Golf.m | S6 Fig |
+| main_tw_plot.m | main_tw_sim.m | Figs 1, 7A-7D  |
+| main_tw_plot_summary | main_tw_sim.m | Fig 7E |
+| main_tw_AC5_DA_Golf_plot.m | main_tw_AC5_DA_Golf_sim.m | S9 Fig |
 
 ## License
 
