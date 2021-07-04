@@ -28,10 +28,12 @@ Matlab plus the toolbox SimBiology. Parallel computing toolbox is recommended. W
 | main_demo3.m | None | Figs 3A, 4A, S4A |
 | main_demo4.m | None | S3 Fig |
 | main_1D_plot.m | None | Figs 3B, 4B, S4B-S4D |
-| main_2D_plot.m | main_2D_sim.m | Figs 2C, 2D, 3C, 3D, S7 |
+| main_2D_plot.m | main_2D_sim.m | Figs 2C, 2D, 3C, 3D, 6A, S7 |
 | main_2D_plot_theory.m | None | Fig 5 |
 | main_2D_plot_conc_DA.m | main_2D_sim_conc_DA.m | S5 Fig |
 | main_2D_plot_tau_Golf.m | main_2D_sim_tau_Golf.m | S6 Fig |
+| main_DAdip_dur_prof.m | None | Fig 6B-6E|
+| main_DAdip_dur_summary.m | None | Fig 6F|
 | main_tw_plot.m | main_tw_sim.m | Figs 1, 7A-7D  |
 | main_tw_plot_summary | main_tw_sim.m | Fig 7E |
 | main_tw_AC5_DA_Golf_plot.m | main_tw_AC5_DA_Golf_sim.m | S9 Fig |
