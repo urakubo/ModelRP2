@@ -20,7 +20,7 @@ Matlab plus the toolbox SimBiology. Parallel computing toolbox is recommended. W
 
 | Program | Figure |
 | ------------- | ------------- |
-| main_demo1.m | Fig 1A, 1B, 1D |
+| main_demo1.m | Fig 2A, 2B, 2D, 2E |
 | main_demo2.m | Fig 1F |
 | main_demo3.m | Figs 3A, 4A, S4A |
 | main_0D_plot.m | S3 Fig |
