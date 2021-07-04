@@ -16,7 +16,10 @@ Matlab plus the toolbox SimBiology. Parallel computing toolbox is recommended. W
 
 	- git clone https://github.com/urakubo/ModelRP2.git
 
-2. Execute main_1D_plot.m, etc., and you will see the following figures. Please run the simulation itself before drawing figures, i.e., please execute "main_2D_sim.m" before executing "main_2D_plot.m."
+2. Please run the simulation before drawing figures, i.e., please execute "main_2D_sim.m" before executing "main_2D_plot.m."
+
+3. Execute main_1D_plot.m, etc., and you will see the following figures.
+
 
 | Program | Figure |
 | ------------- | ------------- |
