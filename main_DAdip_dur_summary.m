@@ -11,14 +11,14 @@
 
 %%%
 
-%	[model, species, params, Toffset] = msn_setup(0);
-%	AC1_tot = species{'AC1','Obj'}.InitialAmount;
-
 	flag_competitive 		= 0;%0;
 	flag_Gi_sequestrated_AC = 1;
 	flag_optoDA 			= 0;
-	flag_duration 			= 1;
-	[model, species, params, container] = msn_setup(flag_competitive, flag_Gi_sequestrated_AC, flag_optoDA, flag_duration);
+	flag_duration 			= 1; % -1: Persistent drop; 0: No pause; >0: pause duration;
+	stop_time = 4000;
+	Toffset_DA = 200;
+	[model, species, params, container] = msn_setup(flag_competitive, flag_Gi_sequestrated_AC, flag_optoDA, flag_duration, ...
+			stop_time, Toffset_DA);
 	d_DA    = container('duration_DA');
 	Toffset = container('Toffset_DA').Value;
 	AC1_tot = species{'AC1','Obj'}.InitialAmount;
@@ -26,16 +26,12 @@
 
 	targs_change = {{} ,{'D2R','RGS'}, {'D2R','RGS'}, {'D2R','RGS'}};
 	targs_change_title = {'Healthy adult', 'Healthy infant', 'Schizophrenia', 'Dystonia'};
-	mults = {[], [0.5,0.5], [4, 0.5], [0.5, 2.0]};
+	mults = {[], [0.5,0.5], [4.0, 0.5], [0.5, 2.0]};
 	cols = {  [1 1 1]*0.5, [0 1 0], [0 0 1], [1 0 0]  };
 
-	durDA  = 0.00125*2.^[0:0.5:15];
-	trange = [0.01, 40];
-
-%	durDA  = 0.00125*2.^[0:0.5:18];
-%	trange = [0.01, 100];
+	durDA  = 0.00125*2.^[0:0.5:18];
+	trange = [0.01, 100];
 	yrange = [-5,65];
-%	yrange = [-5,400];
 
 
 	NUMd  = numel(durDA);
@@ -57,41 +53,27 @@
 	for i = 1:numel(targs_change);
 
 		results = zeros( numel(durDA), 1 );
+		basals  = 0;
+		
 		for j = 1:numel(durDA);
 		
 			% fprintf('i: %d ,j: %d \n', i, j);
 		
 			d_DA.Value = durDA(j);
 			sd = run_sbiosimulate(model, species, targs_change{i}, mults{i});
-			[t, DATA] = obtain_profile('ACact', sd, Toffset);
+			[t, DATA] = obtain_profile('ACprimed', sd, Toffset);
 
-			%{
-			tt = [0:0.005:1]*durDA(j);
-			DATA = interp1(t,DATA,tt);
-			DATA_0    = obtain_conc('ACact', sd, Toffset-1);
-			results(j,1) = integ(tt, DATA-DATA_0, [0, durDA(j)]) ./ durDA(j) ;
-			%}
-
-			%%{
-			tt = [0:0.001:1]*durDA(end)*2;
-			DATA = interp1(t,DATA,tt);
-			DATA_0    = obtain_conc('ACact', sd, Toffset-1);
-			results(j,1) = integ(tt, DATA-DATA_0, [0, durDA(end)*2]) ./ durDA(j);
-			%%}
+			tt = [-0.1:0.001:1.1]*durDA(j);
+			DATA    = interp1(t,DATA,tt);
+			DATA_0  = obtain_conc('ACprimed', sd, Toffset-1);
+			results(j,1) = integ(tt, DATA-DATA_0, [0, durDA(j)]) ./ durDA(j);
 		end
 
 		[t, Conc]       = obtain_profile('Gi_GTP', sd, Toffset );
 		Gi_GTP_0 = interp1(t, Conc, 0);
 		fprintf('%s : %g \n', targs_change_title{i}, Gi_GTP_0 )
 
-%{
-		plot(a, durDA, results * 100, '-', ...
-			'Color', cols{i}, ...
-			'MarkerFaceColor', cols{i}, ...
-			'MarkerSize', 3, ...
-			'LineWidth', 2);
-%}
-		plot(a, durDA, ( results -results(1) )* 100, '-', ...
+		plot(a, durDA,  results* 100, '-', ...
 			'Color', cols{i}, ...
 			'MarkerFaceColor', cols{i}, ...
 			'MarkerSize', 3, ...
